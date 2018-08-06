@@ -2,12 +2,14 @@ const express = require('express');
 const morgan = require('morgan');
 const app = express();
 app.use(morgan('common')); 
-app.use(express.static('public'));
+app.use(express.static('public/home'));
 const { PORT } = require('./config');
-
+const searchesRouter = require('./searches-router');
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
+
+app.use('/searches', searchesRouter);
 
 let server;
 

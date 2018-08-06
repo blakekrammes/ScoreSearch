@@ -14,17 +14,25 @@ time;
 
 msg_box.innerHTML = lang.press_to_start;
 
+// Older browsers might not implement mediaDevices at all, so we set an empty object first
 if ( navigator.mediaDevices === undefined ) {
     navigator.mediaDevices = {};
 }
 
+// Some browsers partially implement mediaDevices. We can't just assign an object
+// with getUserMedia as it would overwrite existing properties.
+// Here, we will just add the getUserMedia property if it's missing.
 if ( navigator.mediaDevices.getUserMedia === undefined ) {
     navigator.mediaDevices.getUserMedia = function ( constrains ) {
+        // First get ahold of the legacy getUserMedia, if present
         var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
         if ( !getUserMedia )  {
+            // Some browsers just don't implement it - return a rejected promise with an error
+            // to keep a consistent interface
             return Promise.reject( new Error( 'getUserMedia is not implemented in this browser' ) );
         }
 
+        // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
         return new Promise( function( resolve, reject ) {
             getUserMedia.call( navigator, constrains, resolve, reject );
         } );
@@ -64,18 +72,17 @@ if ( navigator.mediaDevices.getUserMedia ) {
         return h + m + ':' + sec; 
     }
 
-
     function start() {
         navigator.mediaDevices.getUserMedia( { 'audio': true } ).then( function ( stream ) {
             mediaRecorder = new MediaRecorder( stream );
             mediaRecorder.start();
 
-            button.classList.add( 'recording' );
+            button.classList.add('recording');
             btn_status = 'recording';
 
             msg_box.innerHTML = lang.recording;
           
-            if ( navigator.vibrate ) navigator.vibrate( 150 );
+            if (navigator.vibrate) navigator.vibrate(150);
 
             time = Math.ceil( new Date().getTime() / 1000 );
 
@@ -88,15 +95,10 @@ if ( navigator.mediaDevices.getUserMedia ) {
 
             mediaRecorder.onstop = function () {
                 stream.getTracks().forEach( function( track ) { track.stop() } );
-                console.log('data is being stopped');
                 blob = new Blob( chunks, {type: 'audio/webm'});
                 console.log(blob.type);
                 audioSrc = window.URL.createObjectURL( blob );
-                console.log('blob type is', blob.type);
-                console.log('audioSrc is', audioSrc);
                 audio.src = audioSrc;
-                console.log('chunks is', chunks);
-                console.log(chunks.blob);
                 uploadBlob(chunks);
                 chunks = [];
             }   
