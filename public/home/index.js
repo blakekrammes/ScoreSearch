@@ -89,14 +89,12 @@ if ( navigator.mediaDevices.getUserMedia ) {
 
             mediaRecorder.ondataavailable = function ( event ) {
               console.log('data is being made available');
-              console.log('this is', event.data);
                 chunks.push( event.data );
             }
 
             mediaRecorder.onstop = function () {
                 stream.getTracks().forEach( function( track ) { track.stop() } );
                 blob = new Blob( chunks, {type: 'audio/webm'});
-                console.log(blob.type);
                 audioSrc = window.URL.createObjectURL( blob );
                 audio.src = audioSrc;
                 uploadBlob(chunks);
@@ -128,8 +126,6 @@ if ( navigator.mediaDevices.getUserMedia ) {
                             '<a href="#" onclick="save(); return false;" class="txt_btn">' + lang.download + '</a>'
     }
 
-    
-
     function play() {
         audio.play();
         msg_box.innerHTML = '<a href="#" onclick="pause(); return false;" class="txt_btn">' + lang.stop + '</a><br>' +
@@ -144,9 +140,6 @@ if ( navigator.mediaDevices.getUserMedia ) {
     }
 
     function uploadBlob(blobData) {
-      
-      console.log('blobData before parsing is', blobData[0]);
-      console.log(typeof blobData);
 
       var reader = new window.FileReader();
         reader.readAsDataURL(blobData[0]);
@@ -154,12 +147,10 @@ if ( navigator.mediaDevices.getUserMedia ) {
             base64data = reader.result;
             // console.log(base64data);
             let fixedb64String = base64data.replace(new RegExp("^.{0," +23+ "}(.*)"),  "$1" );
-            console.log(fixedb64String);
             POSTreq(fixedb64String);
         }
 
       function POSTreq (b64data) {
-        console.log('b64data is', b64data);
           var xhr = new XMLHttpRequest();
           var fd = new FormData();
           fd.append('api_token', '3e4055eb4b85f55e5681bbbf894e25f4');
@@ -180,7 +171,7 @@ if ( navigator.mediaDevices.getUserMedia ) {
     }
 
     function parseRetrievedData(parseData) {
-      if (parseData.result === null) {
+      if (parseData.result === null || parseData.error.error_code === 500) {
         $('.audD-result-title').html(`Unable to identify audio. Try recording for a longer period.`)
       }
       $('.audD-result-title').html(parseData.result.title);
@@ -249,13 +240,3 @@ function renderGoogleAPIData(googleData) {
   $('.imslp-search-results').html(googleAPIResults);
   console.log(googleData);
 }
-
-// $('html').click(function() {
-//   getGoogleAPIData(renderGoogleAPIData);
-// });
-
-// api token for google search
-// var googleSearchAPI = 'AIzaSyBWdG0-2UnBB1H0Z05xmLlk8NCZxh0UU_o'
-
-// cx param for google api
-// cx: '008527752432457752614:gzthzygccjw',
