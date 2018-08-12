@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const app = express();
 
-const { PORT, TEST_DATABASE_URL } = require('./config');
+const { PORT, DATABASE_URL } = require('./config');
 
 const usersRouter = require('./users-router');
 const searchesRouter = require('./searches-router');
@@ -60,7 +60,7 @@ function closeServer() {
 }
 
 if (require.main === module) {
-  runServer(TEST_DATABASE_URL).catch(err => console.error(err));
+  runServer(DATABASE_URL).catch(err => console.error(err));
 }
 
 module.exports = { app, runServer, closeServer };
