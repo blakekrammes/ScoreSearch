@@ -27,6 +27,16 @@ router.get('/', (req, res) => {
 	});
 });
 
+router.get('/:id', (req, res) => {
+  PastSearches
+    .find({_id: req.params.id})
+    .then(searches => res.json(searches[0].serialize()))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: 'something went horribly awry' });
+    });
+});
+
 router.post('/', (req, res) => {
 	console.log('posting new past search');
 	const requiredFields = ['music_title', 'IMSLP_links', 'username'];
@@ -39,16 +49,19 @@ router.post('/', (req, res) => {
 	});
 	Users
 	.find( { username: req.body.username } )
-	.limit(1)
-	.then(user => {
-		if (user) {
+	.then(users => {
+		if (users) {
 			PastSearches
 			.create({
-				username: user[0]._id,
+				user: users[0]._id,
 				music_title: req.body.music_title,
 				IMSLP_links: req.body.IMSLP_links
 			})
-			.then(pastSearch => res.status(201).json(pastSearch.serialize()))
+			.then(function(search) {
+				PastSearches.find({_id: search._id}, function(err, results) {
+					res.status(201).json(results[0].serialize());
+				})
+			})
 			.catch(err => {
 				console.error(err);
 				res.status(500).json({ error: 'Something went wrong '});

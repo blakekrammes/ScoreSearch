@@ -10,27 +10,27 @@ const userSchema = mongoose.Schema({
 });
 
 const pastSearchSchema = mongoose.Schema({
-	username: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
+	user: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
 	music_title: {type: String},
 	IMSLP_links: [String]
 });
 
 pastSearchSchema.pre('find', function(next) {
-	this.populate('username');
+	this.populate('user');
 	next();
 });
 
 pastSearchSchema.pre('findOne', function(next) {
-	this.populate('username')
+	this.populate('user')
 });
 
 pastSearchSchema.pre('findById', function(next) {
-	this.populate('username');
+	this.populate('user');
 	next();
 });
 
 pastSearchSchema.pre('findByIdAndUpdate', function(next) {
-	this.populate('username');
+	this.populate('user');
 	next();
 });
 
@@ -38,7 +38,7 @@ pastSearchSchema.pre('findByIdAndUpdate', function(next) {
 pastSearchSchema.methods.serialize = function() {
 		return {
 			id: this._id,
-			username: this.username.username,
+			username: this.user.username,
 			music_title: this.music_title,
 			IMSLP_links: this.IMSLP_links
 		};

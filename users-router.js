@@ -27,6 +27,17 @@ router.get('/', (req, res) => {
 	});
 });
 
+router.get('/:id', (req, res) => {
+	console.log(req.params.id);
+  Users
+    .find({_id: req.params.id})
+    .then(user => res.json(user.serialize()))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: 'something went wrong' });
+    });
+});
+
 router.post('/', (req, res) => {
 	console.log('creating a new user');
 	const requiredFields = ['username', 'email', 'password'];

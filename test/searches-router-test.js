@@ -29,7 +29,7 @@ function seedPastSearchData() {
 
 function generatePastSearchData(user) { 
 		return PastSearches.create({
-			username: user._id,
+			user: user._id,
 			music_title: faker.lorem.words(),
 			IMSLP_links: [faker.internet.domainWord(), faker.internet.domainWord(), faker.internet.domainWord()]
 		})
@@ -83,11 +83,11 @@ describe('PastSearches API resource', function() {
 				pastSearchVar = res.body.searches[0];
 				return PastSearches.find({ _id: pastSearchVar.id })
 			})
-			.then(function(search) {
-				expect(JSON.stringify(pastSearchVar.id)).to.eql(JSON.stringify(search[0]._id));
-				expect(JSON.stringify(pastSearchVar.username)).to.eql(JSON.stringify(search[0].username.username));
-				expect(pastSearchVar.music_title).to.eql(search[0].music_title);
-				expect(pastSearchVar.IMSLP_links).to.eql(search[0].IMSLP_links);
+			.then(function(searches) {
+				expect(JSON.stringify(pastSearchVar.id)).to.eql(JSON.stringify(searches[0]._id));
+				expect(JSON.stringify(pastSearchVar.username)).to.eql(JSON.stringify(searches[0].user.username));
+				expect(pastSearchVar.music_title).to.eql(searches[0].music_title);
+				expect(pastSearchVar.IMSLP_links).to.eql(searches[0].IMSLP_links);
 				return PastSearches.count();
 			})
 			.then(function(count) {
@@ -106,34 +106,39 @@ describe('PastSearches API resource', function() {
 				})
 				.then(function(user) {
 					return PastSearches.create({
-						user_id: user._id,
+						user: user._id,
 						music_title: faker.lorem.words(),
 						IMSLP_links: [faker.internet.domainWord(), faker.internet.domainWord(), faker.internet.domainWord()]
 					})
-					.then(function(search) {
-						let newPastSearch = search.serialize();
-						return chai.request(app)
-							.post('/searches')
-							.send(newPastSearch)
-							.then(function(res) {
-								expect(res).to.have.status(201);
-								expect(res).to.be.json;
-								expect(res.body).to.be.a('object');
-								expect(res.body).to.include.keys('id', 'username', 'email', 'password');
-								expect(res.body.id).to.not.be.null;
-								expect(res.body.user_id).to.equal(newPastSearch.user_id);
-								expect(res.body.music_title).to.equal(newPastSearch.music_title);
-								expect(res.body.IMSLP_links).to.eql(newPastSearch.IMSLP_links);
-								return PastSearches.findById(res.body.id);
-							})
-							.then(function(search) {
-								console.log('search is__________', search);
-								console.lo('newPastSearch is________', newPastSearch);
-								expect(search.user_id).to.equal(newPastSearch.user_id);
-								expect(search.music_title).to.equal(newPastSearch.music_title);
-								expect(search.IMSLP_links).to.equal(newPastSearch.IMSLP_links);
-							})
-					})										
+				})
+				.then(function(search) {
+					return PastSearches.find({_id: search._id})
+				})
+				.then(function(results) {
+					let newPastSearch = results[0].serialize();
+					return chai.request(app)
+						.post('/searches')
+						.send(newPastSearch)
+						.then(function(res) {
+							console.log(res.body);
+							expect(res).to.have.status(201);
+							expect(res).to.be.json;
+							expect(res.body).to.be.a('object');
+							expect(res.body).to.include.keys('id', 'username', 'music_title', 'IMSLP_links');
+							expect(res.body.id).to.not.be.null;
+							expect(res.body.username).to.equal(newPastSearch.username);
+							expect(res.body.music_title).to.equal(newPastSearch.music_title);
+							expect(res.body.IMSLP_links).to.eql(newPastSearch.IMSLP_links);
+							return PastSearches.find({_id: res.body.id});
+						})
+						.then(function(searches) {
+							expect(searches[0].user_id).to.equal(newPastSearch.user_id);
+							expect(searches[0].music_title).to.equal(newPastSearch.music_title);
+							expect(JSON.stringify(searches[0].IMSLP_links)).to.equal(JSON.stringify(newPastSearch.IMSLP_links));
+						})
+						.catch(function(err) {
+							console.error(err);
+						})	
 				})
 				.catch(function(err) {
 					console.error(err);
@@ -143,6 +148,7 @@ describe('PastSearches API resource', function() {
 
 	describe('DELETE endpoint', function() {
 		it('should delete a past search by id', function() {
+
 			let search;
 			return PastSearches
 				.find()
