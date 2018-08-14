@@ -171,7 +171,7 @@ if ( navigator.mediaDevices.getUserMedia ) {
     }
 
     function parseRetrievedData(parseData) {
-      if (parseData.result === null || parseData.error.error_code === 500) {
+      if (parseData.result === null) {
         $('.audD-result-title').html(`Unable to identify audio. Try recording for a longer period.`)
       }
       $('.audD-result-title').html(parseData.result.title);

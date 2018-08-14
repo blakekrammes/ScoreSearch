@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
 			searches: searches.map(
 				(search) => search.serialize())
 		});
-	})
+	})  
 	.catch(err => {
 		console.error(err);
 		res.status(500).json({ message: 'Internal server error' });

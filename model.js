@@ -34,7 +34,6 @@ pastSearchSchema.pre('findByIdAndUpdate', function(next) {
 	next();
 });
 
-
 pastSearchSchema.methods.serialize = function() {
 		return {
 			id: this._id,
