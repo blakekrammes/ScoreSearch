@@ -1,13 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+const cors = require('cors');
 const app = express();
 
 const { PORT, DATABASE_URL } = require('./config');
 
 const usersRouter = require('./users-router');
 const searchesRouter = require('./searches-router');
+const mysearchesRouter = require('./my-searches-router');
+const jsonsearchesRouter = require('./json-searches-router');
 
+app.use(cors());
 app.use(morgan('common')); 
 app.use(express.static('public/home'));
 app.use(express.json());
@@ -18,6 +22,8 @@ app.get('/', (req, res) => {
 
 app.use('/users', usersRouter);
 app.use('/searches', searchesRouter);
+app.use('/mysearches', mysearchesRouter);
+app.use('/jsonsearches', jsonsearchesRouter);
 
 // catch-all endpoint if client makes request to non-existent endpoint
 app.use('*', function (req, res) {
