@@ -296,7 +296,7 @@ $('body').on('submit', '.signup-form', function(e) {
     $('#signup-username').val('');
     $('#signup-email').val('');
     $('#signup-password').val('');
-})
+}) 
 
 // event handler for logging in the user
 $('body').on('submit', '.login-form', function(e) {
