@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width">
     <title>ScoreSearch</title>
     <link href="windex.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   </head>
   <body>
@@ -12,9 +13,18 @@
         <div class="recorder">
             <button class="record_btn" id="button"></button>
             <p id="msg_box"></p>
+            <div class="auth-region">
+              <a href="#" class="auth-link signup">Signup</a>
+              <a href="#" class="auth-link login">Login</a>
+            </div>
+            <div class="form-region">
+            </div>
             <p>Credit to robert_bakiev from codepen for the demo UI and Web Audio API code</p>
+            <a href="#" class="mysearches-link" hidden>My Searches</a>
         </div>
     </div>
+    <ul class="searches">
+    </ul>
     <h2 class="audD-result-title"></h2>
     <section class="imslp-results" role="region">
       <ul class="imslp-search-results">
@@ -24,4 +34,3 @@
     <script src="index.js"></script>
   </body>
 </html>
-

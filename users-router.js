@@ -43,33 +43,105 @@ router.post('/', (req, res) => {
 	const requiredFields = ['username', 'email', 'password'];
 	requiredFields.forEach(field => {
 		if (!(field in req.body)) {
-			const message = `Missing ${field} in request body`;
-			console.error(message);
-			return res.status(400).send(message);
+			console.error(`Missing ${field} in request body`);
+			return res.status(422).json({
+				code: 422,
+				reason: 'Validation Error',
+				message: 'Missing Field',
+				location: requiredFields
+			});
+		}
+		if ((field in req.body) && typeof req.body[field] !== 'string') {
+			console.error(`${field} needs to be a string`);
+			return res.status(422).json({
+				code: 422,
+				reason: 'Validation Error',
+				message: 'Incorrect field type: expected string',
+				location: requiredFields
+			});
 		}
 	});
-	Users
+	const trimmedFields = ['username', 'password'];
+	const nonTrimmedField = trimmedFields.find(
+		field => req.body[field].trim() !== req.body[field]);
+
+	if (nonTrimmedField) {
+		return res.status(422).json({
+			code: 422,
+			reason: 'Validation Error',
+			message: 'Username and password cannot start or end with whitespace',
+			location: nonTrimmedField
+		});
+	}
+
+	const sizedFields = {
+		username: {
+			min: 1
+		},
+		password: {
+			min: 8,
+
+			max: 72
+		}
+	};
+	const tooSmallField = Object.keys(sizedFields).find(
+		field =>
+			'min' in sizedFields[field] &&
+				req.body[field].trim().length < sizedFields[field].min
+	);
+	const tooLargeField = Object.keys(sizedFields).find(
+		field => 
+			'max' in sizedFields[field] && 
+				req.body[field].trim().length > sizedFields[field].max
+	);
+
+	if (tooLargeField || tooLargeField) {
+		return res.status(422).json({
+			code: 422,
+			reason: 'Validation Error',
+			message: tooSmallField
+				? `Must be at least ${sizedFields[tooSmallField]
+				  .min} characters long`
+				: `Must be at most ${sizedFields[tooLargeField]
+				  .max} characters long`,
+			location: tooSmallField || tooLargeField
+		});
+	}
+
+  	let { username, password, email = '' } = req.body;
+  	// trim only email since username/password have already been checked for whitespace
+  	email = email.trim();
+
+	return Users
 	.findOne({ username: req.body.username })
 	.then(user => {
 		if (user) {
 			const message = 'This username is already taken.';
 			console.error(message);
-			return res.status(400).send(message);
-		}
-		else {
-			Users
-			.create({
-				username: req.body.username,
-				email: req.body.email,
-				password: req.body.password
-			})
-			.then(user => res.status(201).json(user.serialize()))
-			.catch(err => {
-				console.error(err);
-				res.status(500).json({ error: 'Something went wrong' });
+			return Promise.reject({
+				code: 422,
+				reason: 'Validation Error',
+				message: 'Username already taken',
+				location: 'username'
 			});
 		}
+		return Users.hashPassword(password);
 	})
+	.then(hash => {
+		return Users
+		.create({
+			username,
+			email,
+			password: hash
+		});
+	})
+	.then(user => res.status(201).json(user.serialize()))		
+	.catch(err => {
+		if (err.reason === 'Validation Error') {
+			return res.status(err.code).json(err);
+		}
+		res.status(500).json({code: 500, message: 'Internal Server Error'});
+	});
 });
 
 router.put('/:id', (req, res) => {

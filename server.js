@@ -1,8 +1,14 @@
+'user strict';
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+const passport = require('passport');
 const cors = require('cors');
 const app = express();
+
+const { localStrategy, jwtStrategy } = require('./auth/strategies');
+const authRouter = require('./auth/router');
 
 const { PORT, DATABASE_URL } = require('./config');
 
@@ -20,10 +26,15 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/home/index.html');
 });
 
+// passport auth strategies
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+
 app.use('/users', usersRouter);
 app.use('/searches', searchesRouter);
 app.use('/mysearches', mysearchesRouter);
 app.use('/jsonsearches', jsonsearchesRouter);
+app.use('/auth', authRouter);
 
 // catch-all endpoint if client makes request to non-existent endpoint
 app.use('*', function (req, res) {
@@ -33,6 +44,7 @@ app.use('*', function (req, res) {
 let server;
 
 function runServer(databaseUrl, port = PORT) {
+
 	return new Promise((resolve, reject) => {
 		console.log('Starting Server')
 		mongoose.connect(databaseUrl, err => {

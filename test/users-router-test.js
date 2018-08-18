@@ -103,13 +103,11 @@ describe('Users API resource', function() {
 					expect(res.body.id).to.not.be.null;
 					expect(res.body.username).to.equal(newUser.username);
 					expect(res.body.email).to.equal(newUser.email);
-					expect(res.body.password).to.eql(newUser.password);
 					return Users.findById(res.body.id);
 				})
 				.then(function(user) {
 					expect(user.username).to.equal(newUser.username);
 					expect(user.email).to.equal(newUser.email);
-					expect(user.password).to.equal(newUser.password);
 				});
 		});
 	});

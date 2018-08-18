@@ -240,3 +240,203 @@ function renderGoogleAPIData(googleData) {
   $('.imslp-search-results').html(googleAPIResults);
   console.log(googleData);
 }
+
+//dynamically added html for signup/login modal
+$('.signup').click(function() {
+    $('.form-region').html(`
+        <form class="signup-form">
+          Username: <input type="text" name="username" id="signup-username" required><br>
+          Email:    <input type="text" name="email" id="signup-email" required><br>
+          Password: <input type="text" name="password" id="signup-password" required><br>
+          <input type="submit" value="Signup">
+        </form>
+        `)
+});
+
+$('.login').click(function() {
+    $('.form-region').html(`
+        <form class="login-form">
+          Username: <input type="text" name="username" id="login-username" required><br>
+          Password: <input type="text" name="password" id="login-password" required><br>
+          <input type="submit" value="Login">
+        </form>
+        `)
+});
+
+// event handler for signing up a user
+$('body').on('submit', '.signup-form', function(e) {
+    e.preventDefault();
+    let username = $('#signup-username').val();
+    let email = $('#signup-email').val();
+    let password = $('#signup-password').val();
+
+    const data = {
+        username: username,
+        email: email,
+        password: password
+    };
+
+    console.log(username, email, password);
+
+    $.ajax({
+    url: 'http://localhost:8080/users/',
+    type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(data),
+    success: function(res, status, xhr) {
+      // console.log('Here is the response from posting a new user', res, status, xhr);
+      console.log('the user id is_____', res.id);
+      let userID = res.id;
+      loginUser(username, password, userID);
+    },
+    error: function(err) {
+      console.error('There was an Error in Creating the User: ', err);
+    }
+  })
+    $('#signup-username').val('');
+    $('#signup-email').val('');
+    $('#signup-password').val('');
+})
+
+// event handler for logging in the user
+$('body').on('submit', '.login-form', function(e) {
+    e.preventDefault();
+    let username = $('#login-username').val();
+    let password = $('#login-password').val();
+
+    const loginData = {
+        username: username,
+        password: password
+    };
+
+    $.ajax({
+    url: 'http://localhost:8080/auth/login',
+    type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(loginData),
+    success: function(res, status, xhr) {
+      // console.log('Here is the response from logging in a user', res, status, xhr);
+      let userID = res.id;
+      loginUser(username, password, userID);
+    },
+    error: function(err) {
+      console.error('There was an Error in logging in the User: ', err);
+    }
+  })
+    $('#login-username').val('');
+    $('#login-password').val('');
+})
+
+// function to get an authToken/login the user
+function loginUser(usernm, pass, userid) {
+    // console.log(usernm, pass);
+
+    const loginData = {
+        username: usernm,
+        password: pass
+    };
+
+    $.ajax({
+        url: 'http://localhost:8080/auth/login',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(loginData),
+        success: function(res, status, xhr) {
+             // console.log(res.authToken);
+             // store the response's authToken in local storage
+             localStorage.setItem('authToken', res.authToken);
+             // set the auth token to a variable to retrieve it
+             let authToken = localStorage.getItem('authToken');
+             $('.mysearches-link').attr('hidden', false);
+             console.log(authToken);
+             $('.mysearches-link').click(function() {
+                console.log('userid in loginUser is_____', userid);
+                accessSearches(authToken, userid);
+             });
+        },
+        error: function(err) {
+          console.error('There was an Error in logging in the User: ', err);
+        }
+    })
+}
+
+function accessSearches(authenticationToken, userId) {
+
+    $.ajax({
+        // url of json searches for a particular user
+        url: 'http://localhost:8080/mysearches',
+        type: 'GET',
+        Authorization: `Bearer ${authenticationToken}`,
+        contentType: 'application/json',
+        success: function(res, status, xhr) {
+             console.log('here is the response from accessing mysearches', res);
+        },
+        error: function(err) {
+          console.error('There was an Error in authenticating the user ', err);
+        }
+    })
+    console.log('here is the userId in accessSearches______', userId);
+    getPastSearchResults(userId, displayPastSearchResults);
+}
+
+function getPastSearchResults(usereyeD, callback) {
+    const pastSearchUrl = `http://localhost:8080/jsonsearches/${usereyeD}`;
+    //for heroku:
+    // let userID;
+    // const herokuPastUserSearchesURL = `https://scoresearch.herokuapp.com/jsonsearches/${userID}`;
+    $.getJSON(pastSearchUrl, callback).fail(errorMessage => {
+        alert(`There was a problem with your request for your account's past searches.`);
+        console.error(errorMessage);
+      });
+}
+
+function displayPastSearchResults(resultData) {
+  for (let i = 0; i < resultData.searches.length; i++) {
+    let searchLinks = "";
+    for (let j = 0; j < resultData.searches[i].IMSLP_links.length; j++) {
+      searchLinks += (`<li><a href="${resultData.searches[i].IMSLP_links[j]}">${resultData.searches[i].IMSLP_links[j]}</a></li>`);
+    }
+    $('.searches').append(
+      `<li data-searchid="${resultData.searches[i].id}">
+        <h3>${resultData.searches[0].username}</h3>
+        <h3>Search No. ${i+1}</h3>
+        <h3>${resultData.searches[i].music_title}</h3>
+        <button type="button" class="delete-button"><i class="fa fa-trash"></i></button>
+        <ul class="search-links">${searchLinks}</ul>
+      </li>`
+    );
+  }
+}
+
+$('body').on('click', '.delete-button', function() {
+  deleteSearchResultFromDOM(this);
+  let pastSearchID = $(this).closest('li').data('searchid');
+  deleteSearchResultFromDB(pastSearchID);
+})
+
+
+function deleteSearchResultFromDOM(search) {
+  $(search).closest('li').remove();
+}
+
+function deleteSearchResultFromDB(searchID) {
+  console.log(searchID);
+  $.ajax({
+    url: `http://localhost:8080/searches/${searchID}`,
+    type: 'DELETE',
+    success: function(res, status, xhr) {
+      console.log('Here is the response', res, status, xhr);
+    },
+    error: function(err) {
+      console.error('There was an Error: ', err);
+    }
+  })
+}
+
+
+
+
+
+
+
+
