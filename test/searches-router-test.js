@@ -96,6 +96,36 @@ describe('PastSearches API resource', function() {
 		});
 	});
 
+		// it.only('should retrieve user`s past searches html page', function() {
+		// 	const newUser = JSON.stringify({
+		// 		username: 'blimpy',
+		// 		email: 'blimpy@gmail.com',
+		// 		password: 'blimpy'
+		// 	});
+		// 	console.log(newUser);
+		// 	return chai.request(app)
+		// 	.post('/users')
+		// 	.send(newUser)
+		// 	.then(function(newlyCreatedUser) {
+		// 		console.log(newlyCreatedUser);
+		// 	})
+
+
+			// .then(function(user) {
+			// 	const loginUser = user.serialize();
+			// 	console.log('loginUser is ______an(a)', typeof loginUser);
+			// 	return chai.request(app)
+			// 	.post('/auth/login')
+			// 	.send(loginUser)
+			// 	.then(function(res) {
+			// 		// console.log(loginUser);
+			// 		console.log('here is the authToken____', res);
+			// 	})
+				// return chai.request(app)
+				// .get('/mysearches/')
+			// })
+		// });
+
 	describe('POST endpoint', function() {
 		it('should add a new past search', function() {
 
@@ -105,6 +135,7 @@ describe('PastSearches API resource', function() {
 				password: 'jargonlift'
 				})
 				.then(function(user) {
+
 					return PastSearches.create({
 						user: user._id,
 						music_title: faker.lorem.words(),
@@ -116,6 +147,7 @@ describe('PastSearches API resource', function() {
 				})
 				.then(function(results) {
 					let newPastSearch = results[0].serialize();
+					console.log(newPastSearch);
 					return chai.request(app)
 						.post('/searches')
 						.send(newPastSearch)

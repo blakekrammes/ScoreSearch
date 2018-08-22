@@ -140,3 +140,27 @@ html {
     transition: 0.15s linear;
     animation: text_btn 0.3s ease-in-out;
 }
+
+#modal {
+    background: rgba(30, 20, 5, .2);
+    width: 400px;
+    height: 200px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px;
+    margin-top: -50px;
+    z-index: 9999;
+}
+
+#test {
+    background:; rgba(10, 50, 5, .2);
+    width: 400px;
+    height: 200px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px;
+    margin-top: -50px;
+    z-index: 9999;
+}

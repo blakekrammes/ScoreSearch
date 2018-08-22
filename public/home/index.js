@@ -1,3 +1,6 @@
+// global variable for storing local variables 
+const STATE = {};
+
 var msg_box = document.getElementById( 'msg_box' ),
     button = document.getElementById( 'button' ),
     canvas = document.getElementById( 'canvas' ),
@@ -86,7 +89,6 @@ if ( navigator.mediaDevices.getUserMedia ) {
 
             time = Math.ceil( new Date().getTime() / 1000 );
 
-
             mediaRecorder.ondataavailable = function ( event ) {
               console.log('data is being made available');
                 chunks.push( event.data );
@@ -171,12 +173,17 @@ if ( navigator.mediaDevices.getUserMedia ) {
     }
 
     function parseRetrievedData(parseData) {
-      if (parseData.result === null) {
-        $('.audD-result-title').html(`Unable to identify audio. Try recording for a longer period.`)
+        console.log('the data from the audD api is: ', parseData);
+      if (parseData.result === null || parseData.result === undefined) {
+        $('.combined-api-results').prop('hidden', false);
+        $('.audD-result-title').html(`Unable to identify audio. Try recording for a longer period.`);
+        return; 
       }
-      $('.audD-result-title').html(parseData.result.title);
       console.log(parseData);
-      getGoogleAPIData(renderGoogleAPIData, parseData);
+      $('.combined-api-results').prop('hidden', false);
+      $('.audD-result-title').html(parseData.result.title);
+      console.log('the initial response from the audD api is: ', parseData);
+      getGoogleAPIData(parseData);
     }
 
     function roundedRect(ctx, x, y, width, height, radius, fill) {
@@ -213,7 +220,6 @@ if ( navigator.mediaDevices.getUserMedia ) {
     button.disabled = true;
 }
 
-
 //a function to create the result <li>
 function createGoogleLI(googleResultItem) {
   const googleResultLI = (`
@@ -221,47 +227,87 @@ function createGoogleLI(googleResultItem) {
   return googleResultLI;
 }
 
+function getGoogleAPIData(audDData) {
+    let musicTitle = audDData.result.title;
 
-function getGoogleAPIData(renderDataCallback, audDData) {
-  const query = {
-    q: audDData.result.title,
+    const query = {
+    q: musicTitle,
     key: 'AIzaSyBWdG0-2UnBB1H0Z05xmLlk8NCZxh0UU_o',
     safe: 'high',
-    num: '10', 
+    num: '5', 
     cx: '008527752432457752614:gzthzygccjw'
-  }
- $.getJSON('https://www.googleapis.com/customsearch/v1', query, renderDataCallback).fail(errorMessage => {
+    }
+    console.log('query object is this: ', query)
+
+    $.getJSON('https://www.googleapis.com/customsearch/v1', query)
+    .done(function(res) {
+        console.log('in getGoogleAPIData res is: ', res);
+        renderGoogleAPIData(res, musicTitle);
+    })
+    .fail(function(errorMessage) {
     alert('There was a problem with your Google API search.');
+    })
+}
+
+function renderGoogleAPIData(googleData, music_title) {
+    console.log('here is the data from the google api: ', googleData);
+    if (googleData.items === undefined) {
+        $('.audD-result-title').html(`Unable to retrieve sheet music.`);
+    }
+    const googleAPIResults = googleData.items.map((item, index) => createGoogleLI(item));
+    $('.combined-api-results').prop('hidden', false);
+    $('.imslp-search-results').html(googleAPIResults);
+    if (localStorage.getItem('authToken')) {
+        $('.search-region').prop('hidden', false);
+        $('.save-link').prop('hidden', false);
+
+        STATE.googleData = googleData;
+        STATE.musicTitle = music_title;
+    }
+}
+
+function savePastSearchToDB(apiResults, musicTitle) {
+    let authenticationToken = localStorage.getItem('authToken');
+        // function to parse the JWT
+        const parseJwt = (authToken) => {
+          try {
+            let parsedToken = JSON.parse(atob(authToken.split('.')[1]));
+            return parsedToken;
+          } catch (e) {
+            return null;
+          }
+        };
+    let username = parseJwt(authenticationToken).user.username;
+
+    const resultLinks = apiResults.items.map(function(item) {
+        let searchlink = `${item.link}#Sheet_Music`;
+        return searchlink;
+    }) 
+    
+    const savedSearch = {
+        username: username,
+        music_title: musicTitle,
+        IMSLP_links: resultLinks
+    };
+
+    $.ajax({
+    url: 'http://localhost:8080/searches/',
+    type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(savedSearch),
+    success: function(res, status, xhr) {
+      // console.log('Here is the response from posting a new user', res, status, xhr);
+      console.log('the response from saving a search is: ', res);
+    },
+    error: function(err) {
+      console.error('There was an error in saving the search: ', err);
+    }
   })
 }
 
-function renderGoogleAPIData(googleData) {
-  const googleAPIResults = googleData.items.map((item, index) => createGoogleLI(item));
-  $('.imslp-search-results').html(googleAPIResults);
-  console.log(googleData);
-}
-
-//dynamically added html for signup/login modal
-$('.signup').click(function() {
-    $('.form-region').html(`
-        <form class="signup-form">
-          Username: <input type="text" name="username" id="signup-username" required><br>
-          Email:    <input type="text" name="email" id="signup-email" required><br>
-          Password: <input type="text" name="password" id="signup-password" required><br>
-          <input type="submit" value="Signup">
-        </form>
-        `)
-});
-
-$('.login').click(function() {
-    $('.form-region').html(`
-        <form class="login-form">
-          Username: <input type="text" name="username" id="login-username" required><br>
-          Password: <input type="text" name="password" id="login-password" required><br>
-          <input type="submit" value="Login">
-        </form>
-        `)
-});
+// ––– working with DB and DOM manipulation
+//
+//
 
 // event handler for signing up a user
 $('body').on('submit', '.signup-form', function(e) {
@@ -296,6 +342,7 @@ $('body').on('submit', '.signup-form', function(e) {
     $('#signup-username').val('');
     $('#signup-email').val('');
     $('#signup-password').val('');
+    $('.auth-links-region', '.form-region').attr('hidden', true);
 }) 
 
 // event handler for logging in the user
@@ -316,19 +363,32 @@ $('body').on('submit', '.login-form', function(e) {
     data: JSON.stringify(loginData),
     success: function(res, status, xhr) {
       // console.log('Here is the response from logging in a user', res, status, xhr);
-      let userID = res.id;
-      loginUser(username, password, userID);
+      $.ajax({
+        url: `http://localhost:8080/users/${username}`,
+        type: 'GET',
+        contentType: 'application/json',
+        success: function(res, status, xhr) {
+            // console.log('res in retrieveUserIDByUsername is___________', res);
+            loginUser(username, password);
+        },
+        error: function(err) {
+            console.error('There was a problem retrieving the user by username');
+        }
+      })
     },
     error: function(err) {
       console.error('There was an Error in logging in the User: ', err);
     }
   })
+ 
     $('#login-username').val('');
     $('#login-password').val('');
+    $('.auth-links-region').prop('hidden', true);
+    $('.form-region').prop('hidden', true);
 })
 
 // function to get an authToken/login the user
-function loginUser(usernm, pass, userid) {
+function loginUser(usernm, pass) {
     // console.log(usernm, pass);
 
     const loginData = {
@@ -342,70 +402,72 @@ function loginUser(usernm, pass, userid) {
         contentType: 'application/json',
         data: JSON.stringify(loginData),
         success: function(res, status, xhr) {
-             // console.log(res.authToken);
              // store the response's authToken in local storage
              localStorage.setItem('authToken', res.authToken);
              // set the auth token to a variable to retrieve it
              let authToken = localStorage.getItem('authToken');
-             $('.mysearches-link').attr('hidden', false);
-             console.log(authToken);
-             $('.mysearches-link').click(function() {
-                console.log('userid in loginUser is_____', userid);
-                accessSearches(authToken, userid);
-             });
+             $('.authentication-region').prop('hidden', false);
+             console.log('the current authToken is:', authToken);
+             $('.authentication-text').text(`You are logged in as ${usernm}`);
         },
         error: function(err) {
-          console.error('There was an Error in logging in the User: ', err);
+          console.error('There was an Error in logging in the User:', err);
+          $('.authentication-region').prop('hidden', false);
+          $('.authentication-text').text(`Incorrect username or password`);
         }
     })
 }
 
-function accessSearches(authenticationToken, userId) {
+// event listener for loggin out the user
+$('body').on('click', '.logout-link', function() {
+    localStorage.removeItem('authToken');
+    // localStorage.removeItem('userID');
+    $('.form-region').prop('hidden', false);
+    $('.auth-links-region').prop('hidden', false);
+    $('.authentication-region').prop('hidden', true);
+    $('.searches').empty();
+});
+
+function accessSearches() {
+    let authenticationToken = localStorage.getItem('authToken');
 
     $.ajax({
         // url of json searches for a particular user
-        url: 'http://localhost:8080/mysearches',
+        url: 'http://localhost:8080/searches/currentuser',
         type: 'GET',
-        Authorization: `Bearer ${authenticationToken}`,
         contentType: 'application/json',
+        headers: {
+            'Authorization': `Bearer  ${authenticationToken}`
+        },
         success: function(res, status, xhr) {
-             console.log('here is the response from accessing mysearches', res);
+            displayPastSearchResults(res);
         },
         error: function(err) {
           console.error('There was an Error in authenticating the user ', err);
         }
     })
-    console.log('here is the userId in accessSearches______', userId);
-    getPastSearchResults(userId, displayPastSearchResults);
-}
-
-function getPastSearchResults(usereyeD, callback) {
-    const pastSearchUrl = `http://localhost:8080/jsonsearches/${usereyeD}`;
-    //for heroku:
-    // let userID;
-    // const herokuPastUserSearchesURL = `https://scoresearch.herokuapp.com/jsonsearches/${userID}`;
-    $.getJSON(pastSearchUrl, callback).fail(errorMessage => {
-        alert(`There was a problem with your request for your account's past searches.`);
-        console.error(errorMessage);
-      });
 }
 
 function displayPastSearchResults(resultData) {
-  for (let i = 0; i < resultData.searches.length; i++) {
-    let searchLinks = "";
-    for (let j = 0; j < resultData.searches[i].IMSLP_links.length; j++) {
-      searchLinks += (`<li><a href="${resultData.searches[i].IMSLP_links[j]}">${resultData.searches[i].IMSLP_links[j]}</a></li>`);
+    const searches = [];
+    for (let i = 0; i < resultData.searches.length; i++) {
+        let searchLinks = "";
+
+        for (let j = 0; j < resultData.searches[i].IMSLP_links.length; j++) {
+          searchLinks += (`<li><a href="${resultData.searches[i].IMSLP_links[j]}">${resultData.searches[i].IMSLP_links[j]}</a></li>`);
+        }
+
+        searches.push(
+          `<li data-searchid="${resultData.searches[i].id}" class="search-results">
+            <h3>${resultData.searches[0].username}</h3>
+            <h3>Search No. ${i+1}</h3>
+            <h3>${resultData.searches[i].music_title}</h3>
+            <button type="button" class="delete-button"><i class="fa fa-trash"></i></button>
+            <ul class="search-links">${searchLinks}</ul>
+          </li>`
+        );
     }
-    $('.searches').append(
-      `<li data-searchid="${resultData.searches[i].id}">
-        <h3>${resultData.searches[0].username}</h3>
-        <h3>Search No. ${i+1}</h3>
-        <h3>${resultData.searches[i].music_title}</h3>
-        <button type="button" class="delete-button"><i class="fa fa-trash"></i></button>
-        <ul class="search-links">${searchLinks}</ul>
-      </li>`
-    );
-  }
+        $('.searches').html(searches);
 }
 
 $('body').on('click', '.delete-button', function() {
@@ -413,7 +475,6 @@ $('body').on('click', '.delete-button', function() {
   let pastSearchID = $(this).closest('li').data('searchid');
   deleteSearchResultFromDB(pastSearchID);
 })
-
 
 function deleteSearchResultFromDOM(search) {
   $(search).closest('li').remove();
@@ -433,10 +494,80 @@ function deleteSearchResultFromDB(searchID) {
   })
 }
 
+// on page load check if the user has an authentication token
+$(function() {
+    if (localStorage.getItem('authToken')) {
+        let authenticationToken = localStorage.getItem('authToken');
+        // function to parse the JWT
+        const parseJwt = (authToken) => {
+          try {
+            let parsedToken = JSON.parse(atob(authToken.split('.')[1]));
+            return parsedToken;
+          } catch (e) {
+            return null;
+          }
+        };
+        let username = parseJwt(authenticationToken).user.username;
+        $('.auth-links-region').prop('hidden', true);
+        $('.form-region').prop('hidden', true);
+        $('.authentication-region').prop('hidden', false);
+        $('.authentication-text').text(`You are logged in as ${username}`);
+        $('.mysearches-link').click(function() {
+            accessSearches();
+            $('.search-region').prop('hidden', false);
+        });
+    }
 
+    //adds html for signup in modal
+    if($('#modal').prop('hidden', false)){
+        $('.signup').click(function() {
+            console.log('is signup firing?');
+            $('#modal').html(`
+                <form class="signup-form" role="form">
+                  Username: <input type="text" name="username" id="signup-username" required><br>
+                  Email:    <input type="text" name="email" id="signup-email" required><br>
+                  Password: <input type="text" name="password" id="signup-password" required><br>
+                  <input type="submit" value="Signup">
+                </form>
+                `)
+            $('#modal').prop('hidden', false);
+        });
 
+        // adds login html in modal
+        $('.login').click(function() {
+            console.log('is login firing?');
+            $('#modal').html(`
+                <form class="login-form" role="form">
+                  Username: <input type="text" name="username" id="login-username" required><br>
+                  Password: <input type="text" name="password" id="login-password" required><br>
+                  <input type="submit" value="Login">
+                </form>
+                `)
+            $('#modal').prop('hidden', true);
+        });
+    }
 
+    // event listener to close out modal
+    if($('#modal').prop('hidden', true)){
+        $(document).click(function(e) {
+            if(!$(e.target).is('#modal')) {
+                $('#modal').prop('hidden', true);
+            }
+        });
+    }
 
-
+    // event listener link to save a search result 
+    $('.save-link').click(function() {
+        savePastSearchToDB(STATE.googleData, STATE.musicTitle);
+        $('.search-region').prop('hidden', true);
+        $('.save-link').prop('hidden', true);
+    })
+    // event listener to access past searches
+    $('.mysearches-link').click(function() {
+        accessSearches();
+        $('.combined-api-results').prop('hidden', true);
+        $('.search-region').prop('hidden', false);
+    });
+});
 
 

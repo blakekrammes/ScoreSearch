@@ -13,24 +13,35 @@
         <div class="recorder">
             <button class="record_btn" id="button"></button>
             <p id="msg_box"></p>
-            <div class="auth-region">
+            <section class="auth-links-region" role="region">
               <a href="#" class="auth-link signup">Signup</a>
               <a href="#" class="auth-link login">Login</a>
-            </div>
-            <div class="form-region">
-            </div>
+            </section>
+            <section class="form-region" role="region">
+            </section>
             <p>Credit to robert_bakiev from codepen for the demo UI and Web Audio API code</p>
-            <a href="#" class="mysearches-link" hidden>My Searches</a>
+            <section class="authentication-region" role="region" hidden>
+              <p class="authentication-text"></p>
+              <a href="#" class="mysearches-link">My Searches</a>
+              <a href="#" class="logout-link">Logout</a>
+            </section>
+
         </div>
     </div>
-    <ul class="searches">
-    </ul>
-    <h2 class="audD-result-title"></h2>
-    <section class="imslp-results" role="region">
-      <ul class="imslp-search-results">
+    <section class="search-region" role="region" hidden>
+      <ul class="searches">
       </ul>
+      <a href="#" class="save-link" hidden>Save</a>
     </section>
-
+    <section class="combined-api-results" hidden>
+      <h2 class="audD-result-title"></h2>
+      <section class="imslp-results" role="region">
+        <ul class="imslp-search-results">
+        </ul>
+      </section>
+    </section>
+    <div id="modal" hidden></div>
+    <div id="test" hidden></div>
     <script src="index.js"></script>
   </body>
 </html>

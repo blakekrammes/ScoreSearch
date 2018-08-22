@@ -2,7 +2,9 @@
 
 const express = require('express');
 const mongoose = require('mongoose');
+const passport = require('passport');
 const router = express.Router();
+const { localStrategy, jwtStrategy } = require('./auth/strategies')
 router.use(express.json());
 router.use(express.static('public/searches'));
 
@@ -10,6 +12,9 @@ mongoose.Promise = global.Promise;
 
 const { PORT } = require('./config');
 const { Users, PastSearches } = require('./model');
+
+passport.use(jwtStrategy);
+const jwtAuth = passport.authenticate('jwt', { session: false });
 
 router.get('/', (req, res) => {
 	console.log('Retrieving Searches');
@@ -27,10 +32,17 @@ router.get('/', (req, res) => {
 	});
 });
 
-router.get('/:id', (req, res) => {
-  PastSearches
-    .find({_id: req.params.id})
-    .then(searches => res.json(searches[0].serialize()))
+router.get('/currentuser', jwtAuth, (req, res) => {
+let userObjectId = mongoose.Types.ObjectId(req.user.id);
+
+  	PastSearches
+    .find({user: userObjectId})
+    .then(function(searches) { 
+    	return res.json({
+    				searches: searches.map(
+    					(search) => search.serialize())
+    	}); 
+    })
     .catch(err => {
       console.error(err);
       res.status(500).json({ error: 'something went horribly awry' });
@@ -39,7 +51,7 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
 	console.log('posting new past search');
-	const requiredFields = ['music_title', 'IMSLP_links', 'username'];
+	const requiredFields = ['username', 'music_title', 'IMSLP_links'];
 	requiredFields.forEach(field => {
 		if (!(field in req.body)) {
 			const message = `Missing ${field} in request body`;

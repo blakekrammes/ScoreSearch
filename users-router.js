@@ -27,10 +27,9 @@ router.get('/', (req, res) => {
 	});
 });
 
-router.get('/:id', (req, res) => {
-	console.log(req.params.id);
-  Users
-    .find({_id: req.params.id})
+router.get('/:username', (req, res) => {
+  	Users
+    .findOne({username: req.params.username})
     .then(user => res.json(user.serialize()))
     .catch(err => {
       console.error(err);

@@ -9,7 +9,7 @@ const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-describe('index.html static page', function() {
+describe('html static page', function() {
 
 	before(function() {
 		return runServer(TEST_DATABASE_URL);
