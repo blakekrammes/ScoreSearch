@@ -67,7 +67,7 @@ describe('Users API resource', function() {
 				expect(res).to.be.json;
 				expect(res.body.users).to.be.a('array');
 				expect(res.body.users.length).to.be.at.least(1);
-				const expectedKeys = ['id', 'username', 'email', 'password'];
+				const expectedKeys = ['id', 'username', 'email'];
 				res.body.users.forEach(function(user) {
 					expect(user).to.be.a('object');
 					expect(user).to.include.keys(expectedKeys);
@@ -79,7 +79,6 @@ describe('Users API resource', function() {
 				expect(userVar.id).to.equal(user.id);
 				expect(userVar.username).to.equal(user.username);
 				expect(userVar.email).to.equal(user.email);
-				expect(userVar.password).to.equal(user.password);
 				return Users.count();
 			})
 			.then(function(count) {
@@ -99,7 +98,7 @@ describe('Users API resource', function() {
 					expect(res).to.have.status(201);
 					expect(res).to.be.json;
 					expect(res.body).to.be.a('object');
-					expect(res.body).to.include.keys('id', 'username', 'email', 'password');
+					expect(res.body).to.include.keys('id', 'username', 'email');
 					expect(res.body.id).to.not.be.null;
 					expect(res.body.username).to.equal(newUser.username);
 					expect(res.body.email).to.equal(newUser.email);
@@ -137,7 +136,6 @@ describe('Users API resource', function() {
 			.then(function(user) {
 				expect(user.username).to.equal(updateData.username);
 				expect(user.email).to.equal(updateData.email);
-				expect(user.password).to.equal(updateData.password);
 			});
 		});
 	});

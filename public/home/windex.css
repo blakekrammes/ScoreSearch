@@ -3,6 +3,7 @@
 body {
   background: #fff;
   font-family: 'Roboto Light';
+  position: relative;
 }
 
 body,
@@ -14,15 +15,12 @@ html {
 }
 
 * {
+    box-sizing: border-box;
     outline: none;
 }
 
 .recorder_wrapper {
     width: 100%;
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flex;
-    display: -o-flex;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -42,9 +40,9 @@ html {
     height: 100px;
     font-family: 'Material Icons';
     font-size: 48px;
-    color: #e74c3c;
+    color: rgba(0, 0, 0);
     background: none;
-    border: 2px solid #e74c3c;
+    border: 2px solid rgba(0, 0, 0);
     border-radius: 50%;
     cursor: pointer;
     transition: 0.15s linear;
@@ -104,7 +102,6 @@ html {
     from {
         transform: scale( 1.1 );
     }
-
     50% {
         transform: none;
     }
@@ -141,26 +138,70 @@ html {
     animation: text_btn 0.3s ease-in-out;
 }
 
+
+
+
+/*my styles*/
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    
+}
+
 #modal {
-    background: rgba(30, 20, 5, .2);
-    width: 400px;
-    height: 200px;
+    background: rgb(255, 255, 255);
+    width: 600px;
+    height: 350px;
+    padding: 20px;
     position: absolute;
     top: 50%;
     left: 50%;
-    margin-left: -50px;
-    margin-top: -50px;
+    margin: -175px 0 0 -300px;
     z-index: 9999;
 }
 
-#test {
-    background:; rgba(10, 50, 5, .2);
-    width: 400px;
-    height: 200px;
-    position: absolute;
+.form-positioner {
+    width: 600px;
+    height: 350px;
+    padding: 20px;
+    position: relative;
     top: 50%;
     left: 50%;
-    margin-left: -50px;
-    margin-top: -50px;
-    z-index: 9999;
+    margin: -175px 0 0 -300px;
 }
+
+.login-form {
+    position: absolute;
+    padding: 20px;
+    width: 300px;
+    height: 300px;
+    top: 75%;
+    left: 50%;
+    margin: -150px 0 0 -150px;
+}
+
+.signup-form {
+    position: absolute;
+    padding: 20px;
+    width: 300px;
+    height: 300px;
+    top: 75%;
+    left: 50%;
+    margin: -150px 0 0 -150px;
+}
+
+.page-title {
+    padding: 20px;
+}
+
+input {
+    margin-bottom: 10px;
+}
+
+
+
+
+

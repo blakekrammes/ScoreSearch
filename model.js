@@ -21,7 +21,8 @@ pastSearchSchema.pre('find', function(next) {
 });
 
 pastSearchSchema.pre('findOne', function(next) {
-	this.populate('user')
+	this.populate('user');
+	next();
 });
 
 pastSearchSchema.pre('findById', function(next) {

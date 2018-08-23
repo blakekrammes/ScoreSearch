@@ -96,33 +96,115 @@ describe('PastSearches API resource', function() {
 		});
 	});
 
-		// it.only('should retrieve user`s past searches html page', function() {
-		// 	const newUser = JSON.stringify({
-		// 		username: 'blimpy',
-		// 		email: 'blimpy@gmail.com',
-		// 		password: 'blimpy'
-		// 	});
-		// 	console.log(newUser);
-		// 	return chai.request(app)
-		// 	.post('/users')
-		// 	.send(newUser)
-		// 	.then(function(newlyCreatedUser) {
-		// 		console.log(newlyCreatedUser);
-		// 	})
+		it.only('should retrieve a particular user`s past searches', function() {
 
+			// return Users.findOne()
+			return Users.create({
+				username: 'barnaby',
+				email: 'barnaby@netsky.com',
+				password: 'barnaby'
+			})
+			.then(function(user) {
+				console.log(user);
+				const credentials = {
+					username: 'Bradley',
+					password: 'jargon'
+				};
+				console.log(credentials);
+				return chai.request(app)
+				.post('/auth/login')
+				.set('content-type', 'application/json')
+				.send(credentials)
+				.then(function(res) {
+					console.log(res);
+				})
+				.catch(function(err) {
+					console.error(err);
+				})
+			})
+			// .then(function(authToken) {
+			// 	console.log('working');
+			// 	console.log(authToken.body);
+			// })
+				// return PastSearches
+				// .create({
+				// 	user: user._id,
+				// 	music_title: 'music title',
+				// 	IMSLP_links: ['music1', 'music2', 'music3']
+				// })
+				// .then(function(search) {
+				// 	return search;
+				// })
+				// .then(function(returnedSearch) {
+				// 	let userObjectId = mongoose.Types.ObjectId(user.id);
+				// 	return PastSearches.findOne({user: userObjectId})
+				// })
+				// .then(function(searches) {
+				// 	console.log('the past searches are:', searches);
+				// })	
+			.catch(function(err) {
+				console.error(err);
+			})	
+		});
+
+	// const fakeSearch1 = {
+	// 				user: user.username,
+	// 				music_title: 'The Moldau',
+	// 				IMSLP_links: ['the moldau', 'the moldau1', 'the moldau2']
+	// 			};
+	// 			const fakeSearch2 = {
+	// 				username: user.username,
+	// 				music_title: 'Watermusic',
+	// 				IMSLP_links: ['watermusic', 'wassermusik', 'aguamusic']
+	// 			};
+
+	// return chai.request(app)
+	// 			.post('/searches')
+	// 			.send(fakeSearch1)
+	// 			.then(function(res) {
+				// 	return chai.request(app)
+				// 	.get('/auth/login')
+				// 	.auth(user.username)	
+				// })
+				// .then(function(res) {
+
+				// })
+
+				// });
+		
+			// const newUser = {
+			// 	username: 'blimpy',
+			// 	email: 'blimpy@gmail.com',
+			// 	password: 'blimpy'
+			// };
+
+			// return chai.request(app)
+			// 	.post('/users')
+			// 	.send(newUser)
+			// 	.then(function(res) {
+			// 		console.log(res.body);
+					
+			// })
+
+			
+
+
+			// return chai.request(app)
+			// .post('/users')
+			// .send(newUser)
+			// .then(function(newlyCreatedUser) {
+			// 	console.log(newlyCreatedUser);
+			// })
 
 			// .then(function(user) {
 			// 	const loginUser = user.serialize();
-			// 	console.log('loginUser is ______an(a)', typeof loginUser);
 			// 	return chai.request(app)
 			// 	.post('/auth/login')
 			// 	.send(loginUser)
 			// 	.then(function(res) {
-			// 		// console.log(loginUser);
-			// 		console.log('here is the authToken____', res);
 			// 	})
-				// return chai.request(app)
-				// .get('/mysearches/')
+			// 	return chai.request(app)
+			// 	.get('/mysearches/')
 			// })
 		// });
 

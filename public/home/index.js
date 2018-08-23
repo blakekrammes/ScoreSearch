@@ -4,9 +4,9 @@ const STATE = {};
 var msg_box = document.getElementById( 'msg_box' ),
     button = document.getElementById( 'button' ),
     canvas = document.getElementById( 'canvas' ),
-lang = {
+messages = {
     'mic_error': 'Error accessing the microphone', 
-    'press_to_start': 'Press to start recording', 
+    'press_to_start': 'Click to Begin Recording', 
     'recording': 'Recording', 
     'play': 'Play', 
     'stop': 'Stop',
@@ -15,7 +15,7 @@ lang = {
 },
 time;
 
-msg_box.innerHTML = lang.press_to_start;
+$('#msg_box').text(messages.press_to_start);
 
 // Older browsers might not implement mediaDevices at all, so we set an empty object first
 if ( navigator.mediaDevices === undefined ) {
@@ -83,7 +83,7 @@ if ( navigator.mediaDevices.getUserMedia ) {
             button.classList.add('recording');
             btn_status = 'recording';
 
-            msg_box.innerHTML = lang.recording;
+            $('#msg_box').text(messages.recording);
           
             if (navigator.vibrate) navigator.vibrate(150);
 
@@ -105,9 +105,10 @@ if ( navigator.mediaDevices.getUserMedia ) {
    
         } ).catch( function ( error ) {
             if ( location.protocol != 'https:' ) {
-              msg_box.innerHTML = lang.mic_error + '<br>'  + lang.use_https;
+                $('#msg_box').text(`${messages.mic_error} '<br>' ${messages.use_https}`);
+                // msg_box.innerHTML = messages.mic_error + '<br>'  + messages.use_https;
             } else {
-              msg_box.innerHTML = lang.mic_error; 
+                $('#msg_box').text(messages.mic_error); 
             }
             button.disabled = true;
         });
@@ -124,21 +125,21 @@ if ( navigator.mediaDevices.getUserMedia ) {
 
         var t = parseTime( now - time );
 
-        msg_box.innerHTML = '<a href="#" onclick="play(); return false;" class="txt_btn">' + lang.play + ' (' + t + 's)</a><br>' +
-                            '<a href="#" onclick="save(); return false;" class="txt_btn">' + lang.download + '</a>'
+        $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="txt_btn">${messages.play} (${t})</a><br>
+                            <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
     }
 
     function play() {
         audio.play();
-        msg_box.innerHTML = '<a href="#" onclick="pause(); return false;" class="txt_btn">' + lang.stop + '</a><br>' +
-                            '<a href="#" onclick="save(); return false;" class="txt_btn">' + lang.download + '</a>';
+        $('#msg_box').html(`<a href="#" onclick="pause(); return false;" class="txt_btn">${messages.stop}</a><br>
+                            <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
     }
 
     function pause() {
         audio.pause();
         audio.currentTime = 0;
-        msg_box.innerHTML = '<a href="#" onclick="play(); return false;" class="txt_btn">' + lang.play + '</a><br>' +
-                            '<a href="#" onclick="save(); return false;" class="txt_btn">' + lang.download + '</a>'
+        $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="txt_btn">${messages.play}</a><br>
+                            <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
     }
 
     function uploadBlob(blobData) {
@@ -147,7 +148,6 @@ if ( navigator.mediaDevices.getUserMedia ) {
         reader.readAsDataURL(blobData[0]);
         reader.onloadend = function () {
             base64data = reader.result;
-            // console.log(base64data);
             let fixedb64String = base64data.replace(new RegExp("^.{0," +23+ "}(.*)"),  "$1" );
             POSTreq(fixedb64String);
         }
@@ -179,26 +179,10 @@ if ( navigator.mediaDevices.getUserMedia ) {
         $('.audD-result-title').html(`Unable to identify audio. Try recording for a longer period.`);
         return; 
       }
-      console.log(parseData);
       $('.combined-api-results').prop('hidden', false);
       $('.audD-result-title').html(parseData.result.title);
       console.log('the initial response from the audD api is: ', parseData);
       getGoogleAPIData(parseData);
-    }
-
-    function roundedRect(ctx, x, y, width, height, radius, fill) {
-        ctx.beginPath();
-        ctx.moveTo(x, y + radius);
-        ctx.lineTo(x, y + height - radius);
-        ctx.quadraticCurveTo(x, y + height, x + radius, y + height);
-        ctx.lineTo(x + width - radius, y + height);
-        ctx.quadraticCurveTo(x + width, y + height, x + width, y + height - radius);
-        ctx.lineTo(x + width, y + radius);
-        ctx.quadraticCurveTo(x + width, y, x + width - radius, y);
-        ctx.lineTo(x + radius, y);
-        ctx.quadraticCurveTo(x, y, x, y + radius);
-        ctx.fillStyle = fill;
-        ctx.fill();
     }
 
     function save() {
@@ -213,9 +197,10 @@ if ( navigator.mediaDevices.getUserMedia ) {
 
 } else {
     if ( location.protocol != 'https:' ) {
-      msg_box.innerHTML = lang.mic_error + '<br>'  + lang.use_https;
-    } else {
-      msg_box.innerHTML = lang.mic_error; 
+        msg_box.innerHTML = messages.mic_error + '<br>'  + messages.use_https;
+    } 
+    else {
+        msg_box.innerHTML = messages.mic_error; 
     }
     button.disabled = true;
 }
@@ -309,84 +294,6 @@ function savePastSearchToDB(apiResults, musicTitle) {
 //
 //
 
-// event handler for signing up a user
-$('body').on('submit', '.signup-form', function(e) {
-    e.preventDefault();
-    let username = $('#signup-username').val();
-    let email = $('#signup-email').val();
-    let password = $('#signup-password').val();
-
-    const data = {
-        username: username,
-        email: email,
-        password: password
-    };
-
-    console.log(username, email, password);
-
-    $.ajax({
-    url: 'http://localhost:8080/users/',
-    type: 'POST',
-    contentType: 'application/json',
-    data: JSON.stringify(data),
-    success: function(res, status, xhr) {
-      // console.log('Here is the response from posting a new user', res, status, xhr);
-      console.log('the user id is_____', res.id);
-      let userID = res.id;
-      loginUser(username, password, userID);
-    },
-    error: function(err) {
-      console.error('There was an Error in Creating the User: ', err);
-    }
-  })
-    $('#signup-username').val('');
-    $('#signup-email').val('');
-    $('#signup-password').val('');
-    $('.auth-links-region', '.form-region').attr('hidden', true);
-}) 
-
-// event handler for logging in the user
-$('body').on('submit', '.login-form', function(e) {
-    e.preventDefault();
-    let username = $('#login-username').val();
-    let password = $('#login-password').val();
-
-    const loginData = {
-        username: username,
-        password: password
-    };
-
-    $.ajax({
-    url: 'http://localhost:8080/auth/login',
-    type: 'POST',
-    contentType: 'application/json',
-    data: JSON.stringify(loginData),
-    success: function(res, status, xhr) {
-      // console.log('Here is the response from logging in a user', res, status, xhr);
-      $.ajax({
-        url: `http://localhost:8080/users/${username}`,
-        type: 'GET',
-        contentType: 'application/json',
-        success: function(res, status, xhr) {
-            // console.log('res in retrieveUserIDByUsername is___________', res);
-            loginUser(username, password);
-        },
-        error: function(err) {
-            console.error('There was a problem retrieving the user by username');
-        }
-      })
-    },
-    error: function(err) {
-      console.error('There was an Error in logging in the User: ', err);
-    }
-  })
- 
-    $('#login-username').val('');
-    $('#login-password').val('');
-    $('.auth-links-region').prop('hidden', true);
-    $('.form-region').prop('hidden', true);
-})
-
 // function to get an authToken/login the user
 function loginUser(usernm, pass) {
     // console.log(usernm, pass);
@@ -417,16 +324,6 @@ function loginUser(usernm, pass) {
         }
     })
 }
-
-// event listener for loggin out the user
-$('body').on('click', '.logout-link', function() {
-    localStorage.removeItem('authToken');
-    // localStorage.removeItem('userID');
-    $('.form-region').prop('hidden', false);
-    $('.auth-links-region').prop('hidden', false);
-    $('.authentication-region').prop('hidden', true);
-    $('.searches').empty();
-});
 
 function accessSearches() {
     let authenticationToken = localStorage.getItem('authToken');
@@ -470,12 +367,6 @@ function displayPastSearchResults(resultData) {
         $('.searches').html(searches);
 }
 
-$('body').on('click', '.delete-button', function() {
-  deleteSearchResultFromDOM(this);
-  let pastSearchID = $(this).closest('li').data('searchid');
-  deleteSearchResultFromDB(pastSearchID);
-})
-
 function deleteSearchResultFromDOM(search) {
   $(search).closest('li').remove();
 }
@@ -494,7 +385,7 @@ function deleteSearchResultFromDB(searchID) {
   })
 }
 
-// on page load check if the user has an authentication token
+// on page load check if the user has an authentication token and listen for DOM events
 $(function() {
     if (localStorage.getItem('authToken')) {
         let authenticationToken = localStorage.getItem('authToken');
@@ -509,7 +400,6 @@ $(function() {
         };
         let username = parseJwt(authenticationToken).user.username;
         $('.auth-links-region').prop('hidden', true);
-        $('.form-region').prop('hidden', true);
         $('.authentication-region').prop('hidden', false);
         $('.authentication-text').text(`You are logged in as ${username}`);
         $('.mysearches-link').click(function() {
@@ -517,57 +407,163 @@ $(function() {
             $('.search-region').prop('hidden', false);
         });
     }
-
+    let modalPropHidden = $('#modal').prop('hidden');
     //adds html for signup in modal
-    if($('#modal').prop('hidden', false)){
-        $('.signup').click(function() {
-            console.log('is signup firing?');
-            $('#modal').html(`
+    $('.signup').click(function() {
+        $('#modal').html(`
+            <div class="form-positioner">
                 <form class="signup-form" role="form">
-                  Username: <input type="text" name="username" id="signup-username" required><br>
-                  Email:    <input type="text" name="email" id="signup-email" required><br>
-                  Password: <input type="text" name="password" id="signup-password" required><br>
-                  <input type="submit" value="Signup">
+                    <label for="signup-username">Username</label>
+                    <input type="text" name="username" id="signup-username" required><br>
+                    <label for="signup-email">Email</label>
+                    <input type="email" name="email" id="signup-email" required><br>
+                    <label for="signup-password">Password</label>
+                    <input type="password" name="password" id="signup-password" required><br>
+                    <input type="submit" value="Signup">
                 </form>
-                `)
+            </div>
+            `)
+        modalPropHidden = true;
+        if (typeof modalPropHidden !== typeof undefined && modalPropHidden !== false) {
             $('#modal').prop('hidden', false);
-        });
-
-        // adds login html in modal
-        $('.login').click(function() {
-            console.log('is login firing?');
-            $('#modal').html(`
+            $('body').css('background', 'rgba(0, 0, 0, .7)');
+        }
+    });
+    // adds login html in modal
+    $('.login').click(function() {
+        $('#modal').html(`
+            <div class="form-positioner">
                 <form class="login-form" role="form">
-                  Username: <input type="text" name="username" id="login-username" required><br>
-                  Password: <input type="text" name="password" id="login-password" required><br>
-                  <input type="submit" value="Login">
+                    <label for="login-username">Username</label>
+                    <input type="text" name="username" id="login-username" required><br>
+                    <label for="login-password">Password</label>
+                    <input type="password" name="password" id="login-password" required><br>
+                    <input type="submit" value="Login">
                 </form>
-                `)
-            $('#modal').prop('hidden', true);
-        });
-    }
-
+            </div>
+            `)
+        modalPropHidden = true;
+        if (typeof modalPropHidden !== typeof undefined && modalPropHidden !== false) {
+            $('#modal').prop('hidden', false);
+            $('body').css('background', 'rgba(0, 0, 0, .7)');
+        }
+    });
     // event listener to close out modal
-    if($('#modal').prop('hidden', true)){
-        $(document).click(function(e) {
-            if(!$(e.target).is('#modal')) {
+    $(document).click(function(e) {
+        if(!$(e.target).is('#modal') && !$(e.target).is('input') && !$(e.target).is('.signup-form') && !$(e.target).is('.login-form') && !$(e.target).is('.form-positioner')) {
+            setTimeout(function(){
+                modalPropHidden = false;
+            }, 300);
+            if (typeof modalPropHidden !== typeof undefined && modalPropHidden !== true) {
+                $('body').css('background', 'rgb(255, 255, 255)');
                 $('#modal').prop('hidden', true);
+            }      
+        }  
+    });
+    // event handler for signing up a user
+    $('body').on('submit', '.signup-form', function(e) {
+        e.preventDefault();
+        let username = $('#signup-username').val();
+        let email = $('#signup-email').val();
+        let password = $('#signup-password').val();
+        const data = {
+            username: username,
+            email: email,
+            password: password
+        };
+        $.ajax({
+            url: 'http://localhost:8080/users/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(res, status, xhr) {
+              let userID = res.id;
+              loginUser(username, password, userID);
+            },
+            error: function(err) {
+              console.error('There was an Error in Creating the User: ', err);
             }
-        });
-    }
-
+        })
+        $('#signup-username').val('');
+        $('#signup-email').val('');
+        $('#signup-password').val('');
+        $('.auth-links-region').prop('hidden', true);
+        $('body').css('background', 'rgb(255, 255, 255)');
+        $('#modal').prop('hidden', true);
+    }); 
+    // event handler for logging in the user
+    $('body').on('submit', '.login-form', function(e) {
+        e.preventDefault();
+        let username = $('#login-username').val();
+        let password = $('#login-password').val();
+        const loginData = {
+            username: username,
+            password: password
+        };
+        $.ajax({
+            url: 'http://localhost:8080/auth/login',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(loginData),
+            success: function(res, status, xhr) {
+                $.ajax({
+                    url: `http://localhost:8080/users/${username}`,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    success: function(res, status, xhr) {
+                        loginUser(username, password);
+                    },
+                    error: function(err) {
+                        console.error('There was a problem retrieving the user by username');
+                    }
+                })
+            },
+            error: function(err) {
+              console.error('There was an Error in logging in the User: ', err);
+            }
+      })
+        $('#login-username').val('');
+        $('#login-password').val('');
+        $('.auth-links-region').prop('hidden', true);
+        $('body').css('background', 'rgb(255, 255, 255)');
+        $('#modal').prop('hidden', true);
+    });
     // event listener link to save a search result 
     $('.save-link').click(function() {
         savePastSearchToDB(STATE.googleData, STATE.musicTitle);
         $('.search-region').prop('hidden', true);
         $('.save-link').prop('hidden', true);
-    })
+    });
     // event listener to access past searches
     $('.mysearches-link').click(function() {
         accessSearches();
         $('.combined-api-results').prop('hidden', true);
         $('.search-region').prop('hidden', false);
     });
+    // event listener to delete a past search 
+    $('body').on('click', '.delete-button', function() {
+      deleteSearchResultFromDOM(this);
+      let pastSearchID = $(this).closest('li').data('searchid');
+      deleteSearchResultFromDB(pastSearchID);
+    });
+    // event listener for loggin out the user
+    $('body').on('click', '.logout-link', function() {
+        localStorage.removeItem('authToken');
+        $('.auth-links-region').prop('hidden', false);
+        $('.authentication-region').prop('hidden', true);
+        $('.searches').empty();
+    });
 });
 
+// code to bypass wait time on IMSLP (suspect)
+// function checkForRedirect(url) {
+//     var waitTimer = document.getElementById('sm_dl_wait'),
+//         nextUrl;
 
+//     if (waitTimer !== null && document.domain === 'imslp.org') {
+//         nextUrl = waitTimer.getAttribute('data-id');
+//         window.location.href = nextUrl;
+//     }
+// };
+
+// checkForRedirect(window.location.href);

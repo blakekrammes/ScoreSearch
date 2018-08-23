@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
@@ -9,6 +9,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   </head>
   <body>
+    <header role="banner"><h1 class="page-title">Score Search</h1></header>
     <div class="recorder_wrapper">
         <div class="recorder">
             <button class="record_btn" id="button"></button>
@@ -17,15 +18,11 @@
               <a href="#" class="auth-link signup">Signup</a>
               <a href="#" class="auth-link login">Login</a>
             </section>
-            <section class="form-region" role="region">
-            </section>
-            <p>Credit to robert_bakiev from codepen for the demo UI and Web Audio API code</p>
             <section class="authentication-region" role="region" hidden>
               <p class="authentication-text"></p>
               <a href="#" class="mysearches-link">My Searches</a>
               <a href="#" class="logout-link">Logout</a>
             </section>
-
         </div>
     </div>
     <section class="search-region" role="region" hidden>
@@ -41,7 +38,6 @@
       </section>
     </section>
     <div id="modal" hidden></div>
-    <div id="test" hidden></div>
     <script src="index.js"></script>
   </body>
 </html>
