@@ -96,56 +96,54 @@ describe('PastSearches API resource', function() {
 		});
 	});
 
-		// it.only('should retrieve a particular user`s past searches', function() {
+		it('should retrieve a particular user`s past searches', function() {
 
-		// 	// return Users.findOne()
-		// 	return Users.create({
-		// 		username: 'barnaby',
-		// 		email: 'barnaby@netsky.com',
-		// 		password: 'barnaby'
-		// 	})
-		// 	.then(function(user) {
-		// 		console.log(user);
-		// 		const credentials = {
-		// 			username: 'Bradley',
-		// 			password: 'jargon'
-		// 		};
-		// 		console.log(credentials);
-		// 		return chai.request(app)
-		// 		.post('/auth/login')
-		// 		.set('content-type', 'application/json')
-		// 		.send(credentials)
-		// 		.then(function(res) {
-		// 			console.log(res);
-		// 		})
-		// 		.catch(function(err) {
-		// 			console.error(err);
-		// 		})
-		// 	})
-			// .then(function(authToken) {
-			// 	console.log('working');
-			// 	console.log(authToken.body);
-			// })
-				// return PastSearches
-				// .create({
-				// 	user: user._id,
-				// 	music_title: 'music title',
-				// 	IMSLP_links: ['music1', 'music2', 'music3']
-				// })
-				// .then(function(search) {
-				// 	return search;
-				// })
-				// .then(function(returnedSearch) {
-				// 	let userObjectId = mongoose.Types.ObjectId(user.id);
-				// 	return PastSearches.findOne({user: userObjectId})
-				// })
-				// .then(function(searches) {
-				// 	console.log('the past searches are:', searches);
-				// })	
-		// 	.catch(function(err) {
-		// 		console.error(err);
-		// 	})	
-		// });
+			// return Users.findOne()
+			return Users.create({
+				username: 'barnaby',
+				email: 'barnaby@netsky.com',
+				password: 'barnaby'
+			})
+			.then(function(user) {
+				console.log(user);
+				const credentials = {
+					username: 'barnaby',
+					password: 'barnaby'
+				};
+				// console.log(credentials);
+				return chai.request(app)
+				.post('/auth/login')
+				.set('Content-Type', 'application/json')
+				.set('Accept', 'application/json')
+				.send(credentials)
+				.then(res => {
+					console.log(res.body);
+					return res.body;
+				})
+				.catch(function(err) {
+					console.error(err);
+				})
+			})
+				return PastSearches
+				.create({
+					user: user._id,
+					music_title: 'music title',
+					IMSLP_links: ['music1', 'music2', 'music3']
+				})
+				.then(function(search) {
+					return search;
+				})
+				.then(function(returnedSearch) {
+					let userObjectId = mongoose.Types.ObjectId(user.id);
+					return PastSearches.findOne({user: userObjectId})
+				})
+				.then(function(searches) {
+					console.log('the past searches are:', searches);
+				})	
+			.catch(function(err) {
+				console.error(err);
+			})	
+		});
 
 	// const fakeSearch1 = {
 	// 				user: user.username,

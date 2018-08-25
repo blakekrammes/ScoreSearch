@@ -9,6 +9,7 @@ const localStrategy = new LocalStrategy((username, password, callback) => {
 	let user;
 	Users.findOne({ username: username })
 	.then(_user => {
+		console.log('the user in localauth is     ', _user);
 		user = _user;
 		if(!user) {
 			return Promise.reject({
@@ -31,7 +32,7 @@ const localStrategy = new LocalStrategy((username, password, callback) => {
 		if (err.reason === 'Login Error') {
 			// console.log('the error in login is ', err.message);
 			// console.log('callback is ', callback);
-			return callback(null, false, err.message);
+			return callback({message: err.message}, false);
 		}
 		return callback(err, false);
 	});

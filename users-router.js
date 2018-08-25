@@ -47,7 +47,7 @@ router.post('/', (req, res) => {
 				code: 422,
 				reason: 'Validation Error',
 				message: 'Missing Field',
-				location: requiredFields
+				location: field
 			});
 		}
 		if ((field in req.body) && typeof req.body[field] !== 'string') {
@@ -56,7 +56,7 @@ router.post('/', (req, res) => {
 				code: 422,
 				reason: 'Validation Error',
 				message: 'Incorrect field type: expected string',
-				location: requiredFields
+				location: field
 			});
 		}
 	});
@@ -94,14 +94,14 @@ router.post('/', (req, res) => {
 				req.body[field].trim().length > sizedFields[field].max
 	);
 
-	if (tooLargeField || tooLargeField) {
+	if (tooSmallField || tooLargeField) {
 		return res.status(422).json({
 			code: 422,
 			reason: 'Validation Error',
 			message: tooSmallField
-				? `Must be at least ${sizedFields[tooSmallField]
+				? `${tooSmallField} must be at least ${sizedFields[tooSmallField]
 				  .min} characters long`
-				: `Must be at most ${sizedFields[tooLargeField]
+				: `${tooLargeField} can only be ${sizedFields[tooLargeField]
 				  .max} characters long`,
 			location: tooSmallField || tooLargeField
 		});

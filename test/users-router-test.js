@@ -109,7 +109,148 @@ describe('Users API resource', function() {
 					expect(user.email).to.equal(newUser.email);
 				});
 		});
-	});
+		it('should throw signup error on invalid username type', function() {
+			const invalidUser = {
+				username: ['hello', 'my', 'name', 'is', 'bob'],
+				email: 'bob@bob.com',
+				password: 'bob'
+			};
+			return chai.request(app)
+			.post('/users')
+			.send(invalidUser)
+			.then(function(res) {
+				expect(res.status).to.equal(422);
+				expect(res.body.reason).to.equal('Validation Error')
+				expect(res.body.message).to.equal('Incorrect field type: expected string');
+				expect(res.body.location).to.equal('username');
+			});
+		});
+		it('should throw signup error if username has whitespace', function() {
+			const spaceyUser = {
+				username: 'bobby',
+				email: 'bobby@netspace.com',
+				password: 'bobby'
+			};
+			return chai.request(app)
+			.post('/users')
+			.send(spaceyUser)
+			.then(function(res) {
+				expect(res.status).to.equal(422);
+				expect(res.body.reason).to.equal('Validation Error');
+				expect(res.body.message).to.equal('Username and password cannot start or end with whitespace');
+				expect(res.body.location).to.equal('username');
+			});
+		});
+		it('should throw signup error if password has whitespace', function() {
+			const spaceyUser = {
+				username: 'bobby',
+				email: 'bobby@netspace.com',
+				password: '   bobby'
+			};
+			return chai.request(app)
+			.post('/users')
+			.send(spaceyUser)
+			.then(function(res) {
+				expect(res.status).to.equal(422);
+				expect(res.body.reason).to.equal('Validation Error');
+				expect(res.body.message).to.equal('Username and password cannot start or end with whitespace');
+				expect(res.body.location).to.equal('password');
+			});
+		});
+		it('should throw error if password is less than 8 characters', function() {
+			const passUser = {
+				username: 'mousey',
+				email: 'anon@mouse.com',
+				password: 'mouse'
+			};
+			return chai.request(app)
+			.post('/users')
+			.send(passUser)
+			.then(function(res) {
+				expect(res.status).to.equal(422);
+				expect(res.body.reason).to.equal('Validation Error');
+				expect(res.body.message).to.equal('password must be at least 8 characters long');
+				expect(res.body.location).to.equal('password');
+			});
+		});
+		it('should throw error if password is more than 72 characters', function() {
+			const passwordyUser = {
+				username: 'morris',
+				email: 'morey@house.com',
+				password: 'housemousestringwingthingswingtrimswimgymshimcrablabslabrunfuntonwonruntonwon'
+			};
+			return chai.request(app)
+			.post('/users')
+			.send(passwordyUser)
+			.then(function(res) {
+				expect(res.status).to.equal(422);
+				expect(res.body.reason).to.equal('Validation Error');
+				expect(res.body.message).to.equal('password can only be 72 characters long');
+				expect(res.body.location).to.equal('password');
+			});
+		});
+		it('should trim the email address if inputted with whitespace', function() {
+			const trimUser = {
+				username: 'florist',
+				email: 'floral@flowers.com    ',
+				password: 'flourbaking'
+			};
+			return chai.request(app)
+			.post('/users')
+			.send(trimUser)
+			.then(function(res) {
+				console.log(res.body);
+				expect(res.status).to.equal(201);
+				expect(res.body.email).to.equal(trimUser.email.trim());
+			});
+		});
+		it('should reject a new user request if username is taken', function() {
+			const origUser = {
+				username: 'therealcarmen',
+				email: 'carmensandiego@netfly.com',
+				password: 'carmenspassword'
+			};
+			const imposterUser = {
+				username: 'therealcarmen',
+				email: 'reallycarmensandiego@netfly.com',
+				password: 'carmenssecretpassword'
+			};
+			return chai.request(app)
+			.post('/users')
+			.send(origUser)
+			.then(function(res) {
+				return chai.request(app)
+				.post('/users')
+				.send(imposterUser)
+				.then(function(res) {
+					expect(res.status).to.equal(422);
+					expect(res.body.reason).to.equal('Validation Error');
+					expect(res.body.message).to.equal('Username already taken');
+					expect(res.body.location).to.equal('username');
+				});
+			});
+		});
+	// 	it.only('should login an existing user and return a JWT', function() {
+	// 		const tokenUser = {
+	// 			username: 'jason',
+	// 			email: 'jjsun@object.com',
+	// 			password: 'bluejay'
+	// 		};
+	// 		let userCred = {};
+
+	// 		return chai.request(app)
+	// 		.post('/users')
+	// 		.send(tokenUser)
+	// 		.then(function(res) {
+	// 			res.username = userCred.username;
+	// 			return Users.hashPassword(tokenUser.password);
+	// 		})
+	// 		.then(function(hash) {
+	// 			userCred.password = hash;
+	// 			console.log(hash);
+	// 		})
+	// 	});
+	// });
 
 	describe('PUT endpoint', function() {
 		it('should update fields in user object', function() {
