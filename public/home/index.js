@@ -18,49 +18,87 @@ time;
 $('#msg_box').text(messages.press_to_start);
 
 // Older browsers might not implement mediaDevices at all, so we set an empty object first
-if ( navigator.mediaDevices === undefined ) {
+if (navigator.mediaDevices === undefined) {
     navigator.mediaDevices = {};
 }
 
-// Some browsers partially implement mediaDevices. We can't just assign an object
-// with getUserMedia as it would overwrite existing properties.
-// Here, we will just add the getUserMedia property if it's missing.
-if ( navigator.mediaDevices.getUserMedia === undefined ) {
-    navigator.mediaDevices.getUserMedia = function ( constrains ) {
-        // First get ahold of the legacy getUserMedia, if present
-        var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-        if ( !getUserMedia )  {
-            // Some browsers just don't implement it - return a rejected promise with an error
-            // to keep a consistent interface
-            return Promise.reject( new Error( 'getUserMedia is not implemented in this browser' ) );
-        }
+let recorder;
+let gumStream;
+let btn_status = 'inactive';
+let audio = new Audio();
 
-        // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
-        return new Promise( function( resolve, reject ) {
-            getUserMedia.call( navigator, constrains, resolve, reject );
-        } );
+if (navigator.mediaDevices.getUserMedia) {
+
+
+    function beginRecording() {
+        console.log('beginning the recording');
+        let AudioContext = window.AudioContext || window.webkitAudioContext || false; 
+
+        navigator.mediaDevices.getUserMedia({ 'audio': true })
+        .then(function(stream) {
+
+            button.classList.add('recording');
+            btn_status = 'recording';
+
+            $('#msg_box').text(messages.recording);
+
+            time = Math.ceil( new Date().getTime() / 1000 );
+
+            if (AudioContext) {
+                let audioCtx = new AudioContext;
+                gumStream = stream;
+                let source = audioCtx.createMediaStreamSource(stream);
+                recorder = new WebAudioRecorder(source, {
+                    workerDir: 'web-audio-recorder-js/lib/',
+                    // must use mp3 to work with Safari, but chomr/Firefox accept ogg
+                    encoding: 'ogg'
+                });
+
+            } 
+            else {
+                alert('The Web Audio API is not supported.');
+            }
+
+            recorder.setOptions({
+                timeLimit: 120,
+                encodeAfterRecord: true,
+                ogg: {quality: 0.9},
+                mp3: {bitRate: 320},
+            });
+
+            recorder.startRecording();
+
+            recorder.onComplete = function(recorder, blob) {
+                console.log(blob)
+                audioSrc = window.URL.createObjectURL(blob);
+                audio.src = audioSrc;
+                // createAudioPlayback(blob);
+                POSTreq(blob);
+            }
+
+            recorder.onError = function(recorder, err) {
+                console.error(err);
+            }
+
+        })
+        .catch(function(err) {
+            console.error(err);
+            if (location.protocol != 'https:') {
+                $('#msg_box').text(`${messages.mic_error} 
+                                    ${messages.use_https}`);
+            } 
+            else {
+                $('#msg_box').text(messages.mic_error); 
+            }
+        button.disabled = true;
+        })
     }
-}
-
-if ( navigator.mediaDevices.getUserMedia ) {
-    var btn_status = 'inactive',
-        mediaRecorder,
-        chunks = [],
-        audio = new Audio(),
-        mediaStream,
-        audioSrc,
-        type = {
-            'type': 'audio/ogg;base64'
-        },
-        ctx,
-        analys,
-        blob;
 
     button.onclick = function () {
-        if ( btn_status == 'inactive' ) {
-            start();
-        } else if ( btn_status == 'recording' ) {
-            stop();
+        if (btn_status === 'inactive' ) {
+            beginRecording();
+        } else if ( btn_status === 'recording') {
+            stopRecording();
         }
     }
 
@@ -75,127 +113,90 @@ if ( navigator.mediaDevices.getUserMedia ) {
         return h + m + ':' + sec; 
     }
 
-    function start() {
-        navigator.mediaDevices.getUserMedia( { 'audio': true } ).then( function ( stream ) {
-            mediaRecorder = new MediaRecorder( stream );
-            mediaRecorder.start();
 
-            button.classList.add('recording');
-            btn_status = 'recording';
+function stopRecording() {
+  console.log('stopping the recording');
+  let recordingTime = recorder.recordingTime();
+  console.log(recordingTime);
 
-            $('#msg_box').text(messages.recording);
-          
-            if (navigator.vibrate) navigator.vibrate(150);
+  button.classList.remove('recording');
+  btn_status = 'inactive';
 
-            time = Math.ceil( new Date().getTime() / 1000 );
-
-            mediaRecorder.ondataavailable = function ( event ) {
-              console.log('data is being made available');
-                chunks.push( event.data );
-            }
-
-            mediaRecorder.onstop = function () {
-                stream.getTracks().forEach( function( track ) { track.stop() } );
-                blob = new Blob( chunks, {type: 'audio/webm'});
-                audioSrc = window.URL.createObjectURL( blob );
-                audio.src = audioSrc;
-                uploadBlob(chunks);
-                chunks = [];
-            }   
-   
-        } ).catch( function ( error ) {
-            if ( location.protocol != 'https:' ) {
-                $('#msg_box').text(`${messages.mic_error} '<br>' ${messages.use_https}`);
-                // msg_box.innerHTML = messages.mic_error + '<br>'  + messages.use_https;
-            } else {
-                $('#msg_box').text(messages.mic_error); 
-            }
-            button.disabled = true;
-        });
-    }
-
-    function stop() {
-        mediaRecorder.stop();
-        button.classList.remove( 'recording' );
-        btn_status = 'inactive';
-      
-        if ( navigator.vibrate ) navigator.vibrate( [ 200, 100, 200 ] );
-
-        var now = Math.ceil( new Date().getTime() / 1000 );
-
-        var t = parseTime( now - time );
-
-        $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="txt_btn">${messages.play} (${t})</a><br>
+  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="txt_btn">${messages.play} (${t})</a><br>
                             <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
-    }
 
-    function play() {
-        audio.play();
-        $('#msg_box').html(`<a href="#" onclick="pause(); return false;" class="txt_btn">${messages.stop}</a><br>
+  var now = Math.ceil( new Date().getTime() / 1000 );
+  var t = parseTime( now - time );
+
+  let audioTrack = gumStream.getAudioTracks()[0];
+  console.log(audioTrack);
+
+  audioTrack.stop();
+
+  recorder.finishRecording();
+
+  // $('#msg_box').text(`Recorded for ${Math.round(recordingTime)} seconds`);
+  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="txt_btn">${messages.play} (${t})</a><br>
                             <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
+  console.log('recording stopped');
+}
+
+function play() {
+    audio.play();
+    $('#msg_box').html(`<a href="#" onclick="pause(); return false;" class="txt_btn">${messages.stop}</a><br>
+                        <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
+}
+
+function pause() {
+    audio.pause();
+    audio.currentTime = 0;
+    $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="txt_btn">${messages.play}</a><br>
+                        <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
+}
+
+function POSTreq (blobData) {
+  var xhr = new XMLHttpRequest();
+  var fd = new FormData();
+  fd.append('api_token', '3e4055eb4b85f55e5681bbbf894e25f4');
+  fd.append('file', blobData);
+  fd.append('method', 'recognize');
+  fd.append('return_itunes_audios', true);
+  fd.append('itunes_country', 'us');
+
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) {
+      parseRetrievedData(xhr.response);
     }
+  }
+  xhr.open('POST', 'https://api.audd.io/');
+  xhr.responseType = 'json';
+  xhr.send(fd);
+}
 
-    function pause() {
-        audio.pause();
-        audio.currentTime = 0;
-        $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="txt_btn">${messages.play}</a><br>
-                            <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
-    }
+function parseRetrievedData(parseData) {
+    console.log('the data from the audD api is: ', parseData);
+  if (parseData.result === null || parseData.result === undefined) {
+    $('.combined-api-results').prop('hidden', false);
+    $('.audD-result-title').html(`Unable to identify audio. Try recording for a longer period.`);
+    return; 
+  }
+  $('.combined-api-results').prop('hidden', false);
+  $('.audD-result-title').html(parseData.result.title);
+  console.log('the initial response from the audD api is: ', parseData);
+  getGoogleAPIData(parseData);
+}
 
-    function uploadBlob(blobData) {
+function save() {
+    var a = document.createElement( 'a' );
+    a.download = 'record.ogg';
+    a.href = audioSrc;
+    document.body.appendChild( a );
+    a.click();
+    document.body.removeChild( a );
+}
 
-      var reader = new window.FileReader();
-        reader.readAsDataURL(blobData[0]);
-        reader.onloadend = function () {
-            base64data = reader.result;
-            let fixedb64String = base64data.replace(new RegExp("^.{0," +23+ "}(.*)"),  "$1" );
-            POSTreq(fixedb64String);
-        }
-
-      function POSTreq (b64data) {
-          var xhr = new XMLHttpRequest();
-          var fd = new FormData();
-          fd.append('api_token', '3e4055eb4b85f55e5681bbbf894e25f4');
-          fd.append('audio', b64data);
-          fd.append('method', 'recognize');
-          fd.append('return_itunes_audios', true);
-          fd.append('itunes_country', 'us');
-
-          xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-              parseRetrievedData(xhr.response);
-            }
-          }
-          xhr.open('POST', 'https://api.audd.io/');
-          xhr.responseType = 'json';
-          xhr.send(fd);
-      }
-    }
-
-    function parseRetrievedData(parseData) {
-        console.log('the data from the audD api is: ', parseData);
-      if (parseData.result === null || parseData.result === undefined) {
-        $('.combined-api-results').prop('hidden', false);
-        $('.audD-result-title').html(`Unable to identify audio. Try recording for a longer period.`);
-        return; 
-      }
-      $('.combined-api-results').prop('hidden', false);
-      $('.audD-result-title').html(parseData.result.title);
-      console.log('the initial response from the audD api is: ', parseData);
-      getGoogleAPIData(parseData);
-    }
-
-    function save() {
-        var a = document.createElement( 'a' );
-        a.download = 'record.ogg';
-        a.href = audioSrc;
-        document.body.appendChild( a );
-        a.click();
-
-        document.body.removeChild( a );
-    }
-
-} else {
+} 
+else {
     if ( location.protocol != 'https:' ) {
         msg_box.innerHTML = messages.mic_error + '<br>'  + messages.use_https;
     } 
@@ -204,6 +205,7 @@ if ( navigator.mediaDevices.getUserMedia ) {
     }
     button.disabled = true;
 }
+
 
 //a function to create the result <li>
 function createGoogleLI(googleResultItem) {
@@ -291,8 +293,6 @@ function savePastSearchToDB(apiResults, musicTitle) {
 }
 
 // ––– working with DB and DOM manipulation
-//
-//
 
 // function to get an authToken/login the user
 function loginUser(usernm, pass) {
