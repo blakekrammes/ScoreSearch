@@ -232,7 +232,7 @@ describe('Users API resource', function() {
 				});
 			});
 		});
-		it('should login an existing user and return a JWT allowing them to access the protected past searches endpoint', function() {
+		it('should login an existing user, return a JWT and access the protected past searches endpoint', function() {
 			const tokenUser = {
 				username: 'jason',
 				email: 'jjsun@object.com',

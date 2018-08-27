@@ -216,6 +216,10 @@ function createGoogleLI(googleResultItem) {
 
 function getGoogleAPIData(audDData) {
     let musicTitle = audDData.result.title;
+    // let date = new Date();
+    // let dateString = date.toString();
+    // let truncatedDateString = dateString.substring(0, dateString.length - 36);
+    // console.log(truncatedDateString);
 
     const query = {
     q: musicTitle,
@@ -265,16 +269,21 @@ function savePastSearchToDB(apiResults, musicTitle) {
           }
         };
     let username = parseJwt(authenticationToken).user.username;
+    let date = new Date();
+    let dateString = date.toString();
+    let truncatedDateString = dateString.substring(0, dateString.length -36);
+    console.log(truncatedDateString);
 
     const resultLinks = apiResults.items.map(function(item) {
         let searchlink = `${item.link}#Sheet_Music`;
         return searchlink;
-    }) 
-    
+    }); 
+
     const savedSearch = {
         username: username,
         music_title: musicTitle,
-        IMSLP_links: resultLinks
+        IMSLP_links: resultLinks,
+        creation: truncatedDateString
     };
 
     $.ajax({
@@ -351,13 +360,12 @@ function displayPastSearchResults(resultData) {
         let searchLinks = "";
 
         for (let j = 0; j < resultData.searches[i].IMSLP_links.length; j++) {
-          searchLinks += (`<li><a href="${resultData.searches[i].IMSLP_links[j]}">${resultData.searches[i].IMSLP_links[j]}</a></li>`);
+          searchLinks += (`<li><a href="${resultData.searches[i].IMSLP_links[j]}">${resultData.searches[i].IMSLP_links[j].substring(23, resultData.searches[i].IMSLP_links[j].length - 12)}</a></li>`);
         }
 
         searches.push(
           `<li data-searchid="${resultData.searches[i].id}" class="search-results">
-            <h3>${resultData.searches[0].username}</h3>
-            <h3>Search No. ${i+1}</h3>
+            <h3>${resultData.searches[i].creation}</h3>
             <h3>${resultData.searches[i].music_title}</h3>
             <button type="button" class="delete-button"><i class="fa fa-trash"></i></button>
             <ul class="search-links">${searchLinks}</ul>
@@ -365,6 +373,7 @@ function displayPastSearchResults(resultData) {
         );
     }
         $('.searches').html(searches);
+        $('.searches').prepend(`<h2 class="searches-username">${resultData.searches[0].username}</h2>`);
 }
 
 function deleteSearchResultFromDOM(search) {
@@ -372,7 +381,6 @@ function deleteSearchResultFromDOM(search) {
 }
 
 function deleteSearchResultFromDB(searchID) {
-  console.log(searchID);
   $.ajax({
     url: `http://localhost:8080/searches/${searchID}`,
     type: 'DELETE',

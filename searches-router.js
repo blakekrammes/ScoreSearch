@@ -51,7 +51,7 @@ let userObjectId = mongoose.Types.ObjectId(req.user.id);
 
 router.post('/', (req, res) => {
 	console.log('posting new past search');
-	const requiredFields = ['username', 'music_title', 'IMSLP_links'];
+	const requiredFields = ['username', 'music_title', 'IMSLP_links', 'creation'];
 	requiredFields.forEach(field => {
 		if (!(field in req.body)) {
 			const message = `Missing ${field} in request body`;
@@ -67,7 +67,8 @@ router.post('/', (req, res) => {
 			.create({
 				user: users[0]._id,
 				music_title: req.body.music_title,
-				IMSLP_links: req.body.IMSLP_links
+				IMSLP_links: req.body.IMSLP_links,
+				creation: req.body.creation
 			})
 			.then(function(search) {
 				PastSearches.find({_id: search._id}, function(err, results) {

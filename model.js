@@ -12,7 +12,8 @@ const userSchema = mongoose.Schema({
 const pastSearchSchema = mongoose.Schema({
 	user: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
 	music_title: {type: String},
-	IMSLP_links: [String]
+	IMSLP_links: [String],
+	creation: {type: String}
 });
 
 pastSearchSchema.pre('find', function(next) {
@@ -40,7 +41,8 @@ pastSearchSchema.methods.serialize = function() {
 			id: this._id,
 			username: this.user.username,
 			music_title: this.music_title,
-			IMSLP_links: this.IMSLP_links
+			IMSLP_links: this.IMSLP_links,
+			creation: this.creation
 		};
 };
 
@@ -48,8 +50,7 @@ userSchema.methods.serialize = function() {
 	return {
 		id: this._id,
 		username: this.username,
-		email: this.email,
-		password: this.password
+		email: this.email
 	};
 };
 
