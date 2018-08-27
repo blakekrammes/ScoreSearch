@@ -89,8 +89,11 @@ describe('Users API resource', function() {
 
 	describe('POST endpoint', function() {
 		it('should add a new user', function() {
-			const newUser = generateUserData();
-
+			const newUser = {
+				username: 'ferdinand',
+				email: 'ferdinand@gmail.com',
+				password: 'ferdinand'
+			};
 			return chai.request(app)
 				.post('/users')
 				.send(newUser)
@@ -127,9 +130,9 @@ describe('Users API resource', function() {
 		});
 		it('should throw signup error if username has whitespace', function() {
 			const spaceyUser = {
-				username: 'bobby',
+				username: '   bobby',
 				email: 'bobby@netspace.com',
-				password: 'bobby'
+				password: 'billybobby'
 			};
 			return chai.request(app)
 			.post('/users')
@@ -199,7 +202,6 @@ describe('Users API resource', function() {
 			.post('/users')
 			.send(trimUser)
 			.then(function(res) {
-				console.log(res.body);
 				expect(res.status).to.equal(201);
 				expect(res.body.email).to.equal(trimUser.email.trim());
 			});
@@ -230,27 +232,52 @@ describe('Users API resource', function() {
 				});
 			});
 		});
-	// 	it.only('should login an existing user and return a JWT', function() {
-	// 		const tokenUser = {
-	// 			username: 'jason',
-	// 			email: 'jjsun@object.com',
-	// 			password: 'bluejay'
-	// 		};
-	// 		let userCred = {};
-
-	// 		return chai.request(app)
-	// 		.post('/users')
-	// 		.send(tokenUser)
-	// 		.then(function(res) {
-	// 			res.username = userCred.username;
-	// 			return Users.hashPassword(tokenUser.password);
-	// 		})
-	// 		.then(function(hash) {
-	// 			userCred.password = hash;
-	// 			console.log(hash);
-	// 		})
-	// 	});
-	// });
+		it('should login an existing user and return a JWT allowing them to access the protected past searches endpoint', function() {
+			const tokenUser = {
+				username: 'jason',
+				email: 'jjsun@object.com',
+				password: 'bluejays'
+			};
+			const userCred = {
+				username: 'jason',
+				password: 'bluejays'
+			};
+			return chai.request(app)
+			.post('/users')
+			.send(tokenUser)
+			.then(function(res) {
+				return chai.request(app)
+				.post('/auth/login')
+				.send(userCred)
+				.then(function(tokenRes) {
+					expect(tokenRes.body).to.include.key('authToken');
+					expect(tokenRes.body.authToken).to.be.a('string');
+					expect(tokenRes.body.authToken).to.have.length(361);
+					const pastSearch = {
+						username: 'jason',
+						music_title: 'the danube waltz',
+						IMSLP_links: ['link1', 'link2', 'link3']
+					};
+					return chai.request(app)
+					.post('/searches')
+					.send(pastSearch)
+					.then(function(searchRes) {
+						let token = tokenRes.body.authToken;
+						return chai.request(app)
+						.get('/searches/currentuser')
+						.set('Authorization', `Bearer ${token}`)
+						.then(function(userSearchesRes) {
+							expect(userSearchesRes.body.searches).to.be.an('array');
+							expect(userSearchesRes.body.searches[0]).to.include.keys('id', 'username', 'music_title', 'IMSLP_links');
+							expect(userSearchesRes.body.searches[0].username).to.equal(pastSearch.username);
+							expect(userSearchesRes.body.searches[0].music_title).to.equal(pastSearch.music_title);
+							expect(userSearchesRes.body.searches[0].IMSLP_links).to.eql(pastSearch.IMSLP_links);
+						})
+					});
+				});
+			});
+		});
+	});
 
 	describe('PUT endpoint', function() {
 		it('should update fields in user object', function() {

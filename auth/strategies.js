@@ -9,7 +9,6 @@ const localStrategy = new LocalStrategy((username, password, callback) => {
 	let user;
 	Users.findOne({ username: username })
 	.then(_user => {
-		console.log('the user in localauth is     ', _user);
 		user = _user;
 		if(!user) {
 			return Promise.reject({
