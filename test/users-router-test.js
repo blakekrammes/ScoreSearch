@@ -252,11 +252,15 @@ describe('Users API resource', function() {
 				.then(function(tokenRes) {
 					expect(tokenRes.body).to.include.key('authToken');
 					expect(tokenRes.body.authToken).to.be.a('string');
-					expect(tokenRes.body.authToken).to.have.length(361);
+					expect(tokenRes.body.authToken.length).to.have.gt(100);
+					let date = new Date();
+    				let dateString = date.toString();
+    				let truncatedDateString = dateString.substring(0, dateString.length -36);
 					const pastSearch = {
 						username: 'jason',
 						music_title: 'the danube waltz',
-						IMSLP_links: ['link1', 'link2', 'link3']
+						IMSLP_links: ['link1', 'link2', 'link3'],
+						creation: truncatedDateString
 					};
 					return chai.request(app)
 					.post('/searches')

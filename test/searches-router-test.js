@@ -28,14 +28,19 @@ function seedPastSearchData() {
 }
 
 function generatePastSearchData(user) { 
-		return PastSearches.create({
-			user: user._id,
-			music_title: faker.lorem.words(),
-			IMSLP_links: [faker.internet.domainWord(), faker.internet.domainWord(), faker.internet.domainWord()]
-		})
-		.catch(function(err) {
-			console.error(err);
-		}) 
+	let date = new Date();
+    let dateString = date.toString();
+    let truncatedDateString = dateString.substring(0, dateString.length -36);
+
+	return PastSearches.create({
+		user: user._id,
+		music_title: faker.lorem.words(),
+		IMSLP_links: [faker.internet.domainWord(), faker.internet.domainWord(), faker.internet.domainWord()],
+		creation: truncatedDateString
+	})
+	.catch(function(err) {
+		console.error(err);
+	}) 
 }
 
 function tearDownDb() {
@@ -75,7 +80,7 @@ describe('PastSearches API resource', function() {
 				expect(res).to.be.json;
 				expect(res.body.searches).to.be.a('array');
 				expect(res.body.searches.length).to.be.at.least(1);
-				const expectedKeys = ['id', 'username', 'music_title', 'IMSLP_links'];
+				const expectedKeys = ['id', 'username', 'music_title', 'IMSLP_links', 'creation'];
 				res.body.searches.forEach(function(search) {
 					expect(search).to.be.a('object');
 					expect(search).to.include.keys(expectedKeys);
@@ -88,6 +93,7 @@ describe('PastSearches API resource', function() {
 				expect(JSON.stringify(pastSearchVar.username)).to.eql(JSON.stringify(searches[0].user.username));
 				expect(pastSearchVar.music_title).to.eql(searches[0].music_title);
 				expect(pastSearchVar.IMSLP_links).to.eql(searches[0].IMSLP_links);
+				expect(pastSearchVar.creation).to.eql(searches[0].creation);
 				return PastSearches.count();
 			})
 			.then(function(count) {
@@ -98,6 +104,9 @@ describe('PastSearches API resource', function() {
 
 	describe('POST endpoint', function() {
 		it('should add a new past search', function() {
+			let date = new Date();
+    		let dateString = date.toString();
+    		let truncatedDateString = dateString.substring(0, dateString.length -36);
 
 			return Users.create({
 				username: 'Brandon',
@@ -109,7 +118,8 @@ describe('PastSearches API resource', function() {
 					return PastSearches.create({
 						user: user._id,
 						music_title: faker.lorem.words(),
-						IMSLP_links: [faker.internet.domainWord(), faker.internet.domainWord(), faker.internet.domainWord()]
+						IMSLP_links: [faker.internet.domainWord(), faker.internet.domainWord(), faker.internet.domainWord()],
+						creation: truncatedDateString
 					})
 				})
 				.then(function(search) {
@@ -126,7 +136,7 @@ describe('PastSearches API resource', function() {
 							expect(res).to.have.status(201);
 							expect(res).to.be.json;
 							expect(res.body).to.be.a('object');
-							expect(res.body).to.include.keys('id', 'username', 'music_title', 'IMSLP_links');
+							expect(res.body).to.include.keys('id', 'username', 'music_title', 'IMSLP_links', 'creation');
 							expect(res.body.id).to.not.be.null;
 							expect(res.body.username).to.equal(newPastSearch.username);
 							expect(res.body.music_title).to.equal(newPastSearch.music_title);

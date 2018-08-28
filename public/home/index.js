@@ -272,7 +272,6 @@ function savePastSearchToDB(apiResults, musicTitle) {
     let date = new Date();
     let dateString = date.toString();
     let truncatedDateString = dateString.substring(0, dateString.length -36);
-    console.log(truncatedDateString);
 
     const resultLinks = apiResults.items.map(function(item) {
         let searchlink = `${item.link}#Sheet_Music`;
@@ -292,7 +291,6 @@ function savePastSearchToDB(apiResults, musicTitle) {
     contentType: 'application/json',
     data: JSON.stringify(savedSearch),
     success: function(res, status, xhr) {
-      // console.log('Here is the response from posting a new user', res, status, xhr);
       console.log('the response from saving a search is: ', res);
     },
     error: function(err) {
@@ -305,7 +303,6 @@ function savePastSearchToDB(apiResults, musicTitle) {
 
 // function to get an authToken/login the user
 function loginUser(usernm, pass) {
-    // console.log(usernm, pass);
 
     const loginData = {
         username: usernm,
@@ -471,7 +468,7 @@ $(function() {
     // event handler for signing up a user
     $('body').on('submit', '.signup-form', function(e) {
         e.preventDefault();
-        let username = $('#signup-username').val();
+        let username = $('#signup-username').val().toLowerCase();
         let email = $('#signup-email').val();
         let password = $('#signup-password').val();
         const data = {
@@ -502,7 +499,7 @@ $(function() {
     // event handler for logging in the user
     $('body').on('submit', '.login-form', function(e) {
         e.preventDefault();
-        let username = $('#login-username').val();
+        let username = $('#login-username').val().toLowerCase();
         let password = $('#login-password').val();
         const loginData = {
             username: username,

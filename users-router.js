@@ -28,8 +28,9 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:username', (req, res) => {
+	let username = req.params.username.toLowerCase();
   	Users
-    .findOne({username: req.params.username})
+    .findOne({username: username})
     .then(user => res.json(user.serialize()))
     .catch(err => {
       console.error(err);
@@ -110,9 +111,10 @@ router.post('/', (req, res) => {
   	let { username, password, email = '' } = req.body;
   	// trim only email since username/password have already been checked for whitespace
   	email = email.trim();
+  	username = username.toLowerCase();
 
 	return Users
-	.findOne({ username: req.body.username })
+	.findOne({ username: username })
 	.then(user => {
 		if (user) {
 			const message = 'This username is already taken.';
@@ -127,6 +129,7 @@ router.post('/', (req, res) => {
 		return Users.hashPassword(password);
 	})
 	.then(hash => {
+		username = username.toLowerCase();
 		return Users
 		.create({
 			username,
