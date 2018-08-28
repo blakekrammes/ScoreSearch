@@ -286,7 +286,7 @@ function savePastSearchToDB(apiResults, musicTitle) {
     };
 
     $.ajax({
-    url: 'http://localhost:8080/searches/',
+    url: 'https://scoresearch.herokuapp.com/searches/',
     type: 'POST',
     contentType: 'application/json',
     data: JSON.stringify(savedSearch),
@@ -310,7 +310,7 @@ function loginUser(usernm, pass) {
     };
 
     $.ajax({
-        url: 'http://localhost:8080/auth/login',
+        url: 'https://scoresearch.herokuapp.com/auth/login',
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(loginData),
@@ -336,7 +336,7 @@ function accessSearches() {
 
     $.ajax({
         // url of json searches for a particular user
-        url: 'http://localhost:8080/searches/currentuser',
+        url: 'https://scoresearch.herokuapp.com/searches/currentuser',
         type: 'GET',
         contentType: 'application/json',
         headers: {
@@ -379,7 +379,7 @@ function deleteSearchResultFromDOM(search) {
 
 function deleteSearchResultFromDB(searchID) {
   $.ajax({
-    url: `http://localhost:8080/searches/${searchID}`,
+    url: `https://scoresearch.herokuapp.com/searches/${searchID}`,
     type: 'DELETE',
     success: function(res, status, xhr) {
       console.log('Here is the response', res, status, xhr);
@@ -477,7 +477,7 @@ $(function() {
             password: password
         };
         $.ajax({
-            url: 'http://localhost:8080/users/',
+            url: 'https://scoresearch.herokuapp.com/users',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data),
@@ -506,13 +506,13 @@ $(function() {
             password: password
         };
         $.ajax({
-            url: 'http://localhost:8080/auth/login',
+            url: 'https://scoresearch.herokuapp.com/auth/login',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(loginData),
             success: function(res, status, xhr) {
                 $.ajax({
-                    url: `http://localhost:8080/users/${username}`,
+                    url: `https://scoresearch.herokuapp.com/users/${username}`,
                     type: 'GET',
                     contentType: 'application/json',
                     success: function(res, status, xhr) {
