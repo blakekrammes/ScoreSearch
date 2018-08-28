@@ -49,7 +49,7 @@ if (navigator.mediaDevices.getUserMedia) {
                 gumStream = stream;
                 let source = audioCtx.createMediaStreamSource(stream);
                 recorder = new WebAudioRecorder(source, {
-                    workerDir: 'web-audio-recorder-js/lib/',
+                    workerDir: 'javascripts/',
                     // must use mp3 to work with Safari, but chomr/Firefox accept ogg
                     encoding: 'ogg'
                 });
