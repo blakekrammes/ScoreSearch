@@ -284,9 +284,16 @@ function savePastSearchToDB(apiResults, musicTitle) {
         IMSLP_links: resultLinks,
         creation: truncatedDateString
     };
+    let baseUrl;
+    if (window.location.protocol === 'http:') {
+        baseUrl = 'http://localhost:8080';
+    }
+    else {
+        baseUrl = 'https://scoresearch.herokuapp.com';
+    }
 
     $.ajax({
-    url: 'https://scoresearch.herokuapp.com/searches/',
+    url: `${baseUrl}/searches/`,
     type: 'POST',
     contentType: 'application/json',
     data: JSON.stringify(savedSearch),
@@ -308,9 +315,16 @@ function loginUser(usernm, pass) {
         username: usernm,
         password: pass
     };
+    let baseUrl;
+    if (window.location.protocol === 'http:') {
+        baseUrl = 'http://localhost:8080';
+    }
+    else {
+        baseUrl = 'https://scoresearch.herokuapp.com';
+    }
 
     $.ajax({
-        url: 'https://scoresearch.herokuapp.com/auth/login',
+        url: `${baseUrl}/auth/login`,
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(loginData),
@@ -333,10 +347,17 @@ function loginUser(usernm, pass) {
 
 function accessSearches() {
     let authenticationToken = localStorage.getItem('authToken');
+    let baseUrl;
+    if (window.location.protocol === 'http:') {
+        baseUrl = 'http://localhost:8080';
+    }
+    else {
+        baseUrl = 'https://scoresearch.herokuapp.com';
+    }
 
     $.ajax({
         // url of json searches for a particular user
-        url: 'https://scoresearch.herokuapp.com/searches/currentuser',
+        url: `${baseUrl}/searches/currentuser`,
         type: 'GET',
         contentType: 'application/json',
         headers: {
@@ -378,8 +399,15 @@ function deleteSearchResultFromDOM(search) {
 }
 
 function deleteSearchResultFromDB(searchID) {
-  $.ajax({
-    url: `https://scoresearch.herokuapp.com/searches/${searchID}`,
+    let baseUrl;
+    if (window.location.protocol === 'http:') {
+        baseUrl = 'http://localhost:8080';
+    }
+    else {
+        baseUrl = 'https://scoresearch.herokuapp.com';
+    }
+    $.ajax({
+    url: `${baseUrl}/searches/${searchID}`,
     type: 'DELETE',
     success: function(res, status, xhr) {
       console.log('Here is the response', res, status, xhr);
@@ -387,7 +415,7 @@ function deleteSearchResultFromDB(searchID) {
     error: function(err) {
       console.error('There was an Error: ', err);
     }
-  })
+    })
 }
 
 // on page load check if the user has an authentication token and listen for DOM events
@@ -476,8 +504,15 @@ $(function() {
             email: email,
             password: password
         };
+        let baseUrl;
+        if (window.location.protocol === 'http:') {
+            baseUrl = 'http://localhost:8080';
+        }
+        else {
+            baseUrl = 'https://scoresearch.herokuapp.com';
+        }
         $.ajax({
-            url: 'https://scoresearch.herokuapp.com/users',
+            url: `${baseUrl}/users`,
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data),
@@ -505,14 +540,21 @@ $(function() {
             username: username,
             password: password
         };
+        let baseUrl;
+        if (window.location.protocol === 'http:') {
+            baseUrl = 'http://localhost:8080';
+        }
+        else {
+            baseUrl = 'https://scoresearch.herokuapp.com';
+        }
         $.ajax({
-            url: 'https://scoresearch.herokuapp.com/auth/login',
+            url: `${baseUrl}/auth/login`,
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(loginData),
             success: function(res, status, xhr) {
                 $.ajax({
-                    url: `https://scoresearch.herokuapp.com/users/${username}`,
+                    url: `${baseUrl}/users/${username}`,
                     type: 'GET',
                     contentType: 'application/json',
                     success: function(res, status, xhr) {
