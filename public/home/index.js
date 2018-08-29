@@ -216,10 +216,6 @@ function createGoogleLI(googleResultItem) {
 
 function getGoogleAPIData(audDData) {
     let musicTitle = audDData.result.title;
-    // let date = new Date();
-    // let dateString = date.toString();
-    // let truncatedDateString = dateString.substring(0, dateString.length - 36);
-    // console.log(truncatedDateString);
 
     const query = {
     q: musicTitle,
@@ -228,11 +224,9 @@ function getGoogleAPIData(audDData) {
     num: '5', 
     cx: '008527752432457752614:gzthzygccjw'
     }
-    console.log('query object is this: ', query)
 
     $.getJSON('https://www.googleapis.com/customsearch/v1', query)
     .done(function(res) {
-        console.log('in getGoogleAPIData res is: ', res);
         renderGoogleAPIData(res, musicTitle);
     })
     .fail(function(errorMessage) {
@@ -445,6 +439,7 @@ $(function() {
     $('.signup').click(function() {
         $('#modal').html(`
             <div class="form-positioner">
+                <p class="signup-error-box"></p>
                 <form class="signup-form" role="form">
                     <label for="signup-username">Username</label>
                     <input type="text" name="username" id="signup-username" required><br>
@@ -466,6 +461,7 @@ $(function() {
     $('.login').click(function() {
         $('#modal').html(`
             <div class="form-positioner">
+                <p class="login-error-box"></p>
                 <form class="login-form" role="form">
                     <label for="login-username">Username</label>
                     <input type="text" name="username" id="login-username" required><br>
@@ -517,19 +513,27 @@ $(function() {
             contentType: 'application/json',
             data: JSON.stringify(data),
             success: function(res, status, xhr) {
-              let userID = res.id;
-              loginUser(username, password, userID);
+                let userID = res.id;
+                loginUser(username, password, userID);
+                $('body').css('background', 'rgb(255, 255, 255)');
+                $('#modal').prop('hidden', true);
+                $('.auth-links-region').prop('hidden', true);
+                $('#signup-email').val('');
+                $('#signup-password').val('');
+                $('#signup-username').val('');
             },
             error: function(err) {
               console.error('There was an Error in Creating the User: ', err);
+              $('.signup-error-box').text(err.responseJSON.message);
+              if (err.responseJSON.message === 'Password must be at least 8 characters long' || err.responseJSON.message === 'Password can only be 72 characters long') {
+                $('#signup-password').val('');
+              }
+              if (err.responseJSON.message === 'Username already taken') {
+                $('#signup-username').val('');
+              }
             }
         })
-        $('#signup-username').val('');
-        $('#signup-email').val('');
-        $('#signup-password').val('');
-        $('.auth-links-region').prop('hidden', true);
-        $('body').css('background', 'rgb(255, 255, 255)');
-        $('#modal').prop('hidden', true);
+        
     }); 
     // event handler for logging in the user
     $('body').on('submit', '.login-form', function(e) {
@@ -559,6 +563,9 @@ $(function() {
                     contentType: 'application/json',
                     success: function(res, status, xhr) {
                         loginUser(username, password);
+                        $('.auth-links-region').prop('hidden', true);
+                        $('body').css('background', 'rgb(255, 255, 255)');
+                        $('#modal').prop('hidden', true);
                     },
                     error: function(err) {
                         console.error('There was a problem retrieving the user by username');
@@ -567,13 +574,11 @@ $(function() {
             },
             error: function(err) {
               console.error('There was an Error in logging in the User: ', err);
+              $('.login-error-box').text(err.responseJSON.message);
             }
       })
         $('#login-username').val('');
         $('#login-password').val('');
-        $('.auth-links-region').prop('hidden', true);
-        $('body').css('background', 'rgb(255, 255, 255)');
-        $('#modal').prop('hidden', true);
     });
     // event listener link to save a search result 
     $('.save-link').click(function() {

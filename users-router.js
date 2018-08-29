@@ -100,9 +100,9 @@ router.post('/', (req, res) => {
 			code: 422,
 			reason: 'Validation Error',
 			message: tooSmallField
-				? `${tooSmallField} must be at least ${sizedFields[tooSmallField]
+				? `Password must be at least ${sizedFields[tooSmallField]
 				  .min} characters long`
-				: `${tooLargeField} can only be ${sizedFields[tooLargeField]
+				: `Password can only be ${sizedFields[tooLargeField]
 				  .max} characters long`,
 			location: tooSmallField || tooLargeField
 		});

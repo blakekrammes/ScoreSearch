@@ -23,7 +23,7 @@ const localStrategy = new LocalStrategy((username, password, callback) => {
 		if (!isValid) {
 			return Promise.reject({
 				reason: 'Login Error',
-				message: 'Invalid username or password'
+				message: 'Incorrect username or password'
 			});
 		}
 		return callback(null, user);

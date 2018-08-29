@@ -172,7 +172,7 @@ describe('Users API resource', function() {
 			.then(function(res) {
 				expect(res.status).to.equal(422);
 				expect(res.body.reason).to.equal('Validation Error');
-				expect(res.body.message).to.equal('password must be at least 8 characters long');
+				expect(res.body.message).to.equal('Password must be at least 8 characters long');
 				expect(res.body.location).to.equal('password');
 			});
 		});
@@ -188,7 +188,7 @@ describe('Users API resource', function() {
 			.then(function(res) {
 				expect(res.status).to.equal(422);
 				expect(res.body.reason).to.equal('Validation Error');
-				expect(res.body.message).to.equal('password can only be 72 characters long');
+				expect(res.body.message).to.equal('Password can only be 72 characters long');
 				expect(res.body.location).to.equal('password');
 			});
 		});
