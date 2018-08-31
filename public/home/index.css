@@ -37,6 +37,11 @@
     background: none;
 }
 
+.recording {
+    animation: recording 2s infinite ease-in-out;
+    position: relative;
+}
+
 .recording:before {
     content: '';
     display: inline-block;
@@ -51,16 +56,46 @@
     animation: recording_before 2s infinite ease-in-out;
 }
 
+@keyframes recording {
+    from {
+        transform: scale( 1.1 );
+    }
+
+    50% {
+        transform: none;
+    }
+
+    to {
+        transform: scale( 1.1 );
+    }
+}
+
+@keyframes recording_before {
+    80% {
+        width: 130%;
+        height: 130%;
+        margin: -67%;
+        opacity: 0;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
 .record_canvas {
     width: 60px;
     height: 100px;
-    display: inline-block;
-    
+    display: inline-block; 
 }
 
 .txt_btn {
     transition: 0.15s linear;
     animation: text_btn 0.3s ease-in-out;
+}
+
+.material-icons {
+    font-size: 3rem;
 }
 
 /*general stylings*/
@@ -111,10 +146,6 @@ header {
     text-align: center;
     line-height: 1.5rem;
     padding-bottom: 1rem;
-}
-
-.past-search-region {
-
 }
 
 h1, h2, h3, p {
@@ -169,12 +200,8 @@ input[type=submit] {
     padding: .3rem 1rem;
 }
 
-.past-search-links:last-child {
-    padding-bottom: 1rem;
-}
-
 .past-search-links {
-    margin-bottom: 3vh;
+    margin-bottom: 3.5rem;
 }
 
 .past-search-links li {
@@ -187,12 +214,10 @@ input[type=submit] {
 .delete-button {
     cursor: pointer;
     border: none;
-    font-size: 10vw;
     position: absolute;
     bottom: 0;
     right: 0;
     background: none;
-    padding-right: .5rem;
 }
 
 #modal {
@@ -204,6 +229,17 @@ input[type=submit] {
     top: 50%;
     left: 50%;
     margin: -25vh 0 0 -40vw;
+}
+
+#msg_box {
+    margin-bottom: .5rem;
+}
+
+.instructions {
+    margin-top: -.8rem;
+    line-height: 1.2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, .5);
+    padding-bottom: .3rem;
 }
 
 .form-positioner {
@@ -240,11 +276,13 @@ input[type=submit] {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
 }
-
+.usage-details {
+    font-size: 3rem;
+}
 /*large phone/tablet breakpoint*/
 @media only screen and (min-width: 600px) {
-    a, input, label, h3, h2 {
-        font-size: 1.5rem;
+    a, input, label, h2, h3 {
+        font-size: 1.6rem;
     }
     input {
         padding: .3rem;
@@ -257,13 +295,14 @@ input[type=submit] {
     }
     #msg_box {
         font-size: 1.8rem;
-        margin-bottom: .3rem
+        margin-bottom: 1.6rem
     }
     .signup-error-box, .login-error-box {
         font-size: 1.5rem;
         padding-top: 3.5rem;
     }
     .authentication-text {
+        font-size: 1.8rem;
         padding: .5rem;
     }
     .music-title {
@@ -276,11 +315,10 @@ input[type=submit] {
         font-size: 25vw;
     }
     .past-search-links {
-        margin-bottom: 4.5rem;
+        margin-bottom: 5.5rem;
     }
-    .delete-button {
-        font-size: 4rem;
-        padding-right: 1rem;
+    .material-icons {
+        font-size: 5rem;
     }
     .save-button {
         padding: .5rem;
@@ -293,9 +331,18 @@ input[type=submit] {
         line-height: 2rem;
     }
     .ui-link {
-        padding: 0 .5rem;
+        padding: 0 .3rem;
         font-size: 2rem;
         line-height: 2.5rem;
+    }
+    .usage-details {
+        font-size: 5rem;
+    }
+    .instructions {
+        font-size: 1.8rem;
+        line-height: 2rem;
+        padding: 0 .3rem;
+        padding-bottom: .3rem;
     }
 }
 
@@ -312,6 +359,16 @@ input[type=submit] {
         height: 30vw;
         font-size: 20vw;
     }
+    .material-icons {
+        font-size: 6.5rem;
+    }
+    .past-search-links {
+        margin-bottom: 6.5rem;
+    }
+    #msg_box {
+        margin-bottom: 2.6rem;
+    }
+    
 }
 
 /*any larger devices*/

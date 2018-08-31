@@ -4,16 +4,16 @@ const STATE = {};
 var msg_box = document.getElementById( 'msg_box' ),
     button = document.getElementById( 'button' ),
     canvas = document.getElementById( 'canvas' ),
-messages = {
-    'mic_error': 'Error accessing the microphone', 
-    'press_to_start': 'Click to begin recording', 
-    'recording': 'Recording', 
-    'play': 'Play', 
-    'stop': 'Stop',
-    'download': 'Download', 
-    'use_https': 'This application will not work over an insecure connection. Use HTTPS.',
-    'not_supported_in_safari_or_edge': 'Score Search is not yet supported in Safari or Edge. Please use Chrome or Firefox instead'
-},
+    messages = {
+        'mic_error': 'Error accessing the microphone', 
+        'press_to_start': 'Click above to begin recording', 
+        'recording': 'Recording', 
+        'play': 'Play', 
+        'stop': 'Stop',
+        'download': 'Download', 
+        'use_https': 'This application will not work over an insecure connection. Use HTTPS.',
+        'not_supported_in_safari_or_edge': 'Score Search is not yet supported in Safari or Edge. Please use Chrome or Firefox instead'
+    },
 time;
 
 $('#msg_box').text(messages.press_to_start);
@@ -35,7 +35,6 @@ if (navigator.mediaDevices.getUserMedia) {
         $('.auth-links-region').css('display', 'none'); 
         $('.record_btn').css('display', 'none');
     }
-
 
     function beginRecording() {
         console.log('beginning the recording');
@@ -383,7 +382,7 @@ function displayPastSearchResults(resultData) {
             <h3 class="music-title">${resultData.searches[i].music_title}</h3>
             <h3 class="creation-time">${resultData.searches[i].creation}</h3>
             <ul class="past-search-links">${searchLinks}</ul>
-            <button type="button" class="delete-button" aria-label="delete button"><i class="fa fa-trash"></i></button>
+            <button type="button" class="delete-button" aria-label="delete button"><i class="material-icons">delete_forever</i></button>
           </div>`
         );
     }
@@ -436,6 +435,17 @@ $(function() {
             $('.past-search-region').prop('hidden', false);
         });
     }
+    let display = false;
+    $('.usage-details').click(function(e) {
+        if (display === false) {
+            $('.instructions').prop('hidden', false);
+            display = true;
+        }
+        else if (display === true) {
+            $('.instructions').prop('hidden', true);
+            display = false;
+        }
+    });
     let modalPropHidden = $('#modal').prop('hidden');
     //adds html for signup in modal
     $('.signup').click(function() {
