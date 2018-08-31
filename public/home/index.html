@@ -5,39 +5,44 @@
     <meta name="viewport" content="width=device-width">
     <title>ScoreSearch</title>
     <link href="windex.css" rel="stylesheet" type="text/css" />
+    <link href="recorder.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   </head>
   <body>
-    <header role="banner"><h1 class="page-title">Score Search</h1></header>
-    <div class="recorder_wrapper">
-        <div class="recorder">
-            <button class="record_btn" id="button"></button>
-            <p id="msg_box"></p>
-            <section class="auth-links-region" role="region">
-              <a href="#" class="auth-link signup">Signup</a>
-              <a href="#" class="auth-link login">Login</a>
-            </section>
+    <section class="row" role="region">
+      <header role="banner" class="col-xs-12">
+        <h1 class="page-title">Score Search</h1>
+        <h3 class="site-description">Identify Classical Music by Recording and Find the Sheet Music</h3>
+      </header>
+      <section class="recorder col-xs-12" role="region">
+          <button class="record_btn" id="button"></button>
+          <p id="msg_box"></p>
+          <section class="auth-links-region" role="region">
+            <a href="#" class="ui-link signup">Signup</a>
+            <a href="#" class="ui-link login">Login</a>
+          </section>
             <section class="authentication-region" role="region" hidden>
               <p class="authentication-text"></p>
-              <a href="#" class="mysearches-link">My Searches</a>
-              <a href="#" class="logout-link">Logout</a>
+              <a href="#" class="ui-link mysearches-link">My Searches</a>
+              <a href="#" class="ui-link logout-link">Logout</a>
             </section>
+      </section>
+      <section class="past-search-region col-xs-12" role="region" hidden>
+        <h2 class="searches-username"></h2>
+        <div class="past-searches row">
         </div>
-    </div>
-    <section class="search-region" role="region" hidden>
-      <ul class="searches">
-      </ul>
-      <a href="#" class="save-link" hidden>Save</a>
-    </section>
-    <section class="combined-api-results" hidden>
-      <h2 class="audD-result-title"></h2>
-      <section class="imslp-results" role="region">
-        <ul class="imslp-search-results">
-        </ul>
+      </section>
+      <section class="api-results" role="region" hidden>
+        <h2 class="audD-result-title"></h2>
+        <section class="imslp-results" role="region">
+          <ul class="imslp-search-results">
+          </ul>
+          <button href="#" class="save-button" hidden>Save</button>
+        </section>
       </section>
     </section>
-    <div id="modal" hidden></div>
+    <section id="modal" class="col-xs-12" role="region" hidden></section>
     <script src="javascripts/WebAudioRecorder.js"></script>
     <script src="index.js"></script>
   </body>

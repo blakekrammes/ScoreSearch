@@ -37,13 +37,13 @@ pastSearchSchema.pre('findByIdAndUpdate', function(next) {
 });
 
 pastSearchSchema.methods.serialize = function() {
-		return {
-			id: this._id,
-			username: this.user.username,
-			music_title: this.music_title,
-			IMSLP_links: this.IMSLP_links,
-			creation: this.creation
-		};
+	return {
+		id: this._id,
+		username: this.user.username,
+		music_title: this.music_title,
+		IMSLP_links: this.IMSLP_links,
+		creation: this.creation
+	};
 };
 
 userSchema.methods.serialize = function() {

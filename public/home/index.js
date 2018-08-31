@@ -6,12 +6,13 @@ var msg_box = document.getElementById( 'msg_box' ),
     canvas = document.getElementById( 'canvas' ),
 messages = {
     'mic_error': 'Error accessing the microphone', 
-    'press_to_start': 'Click to Begin Recording', 
+    'press_to_start': 'Click to begin recording', 
     'recording': 'Recording', 
     'play': 'Play', 
     'stop': 'Stop',
     'download': 'Download', 
-    'use_https': 'This application will not work over an insecure connection. Use HTTPS.'
+    'use_https': 'This application will not work over an insecure connection. Use HTTPS.',
+    'not_supported_in_safari_or_edge': 'Score Search is not yet supported in Safari or Edge. Please use Chrome or Firefox instead'
 },
 time;
 
@@ -29,9 +30,16 @@ let audio = new Audio();
 
 if (navigator.mediaDevices.getUserMedia) {
 
+    if (window.webkitAudioContext) {
+        $('#msg_box').text(messages.not_supported_in_safari_or_edge);
+        $('.auth-links-region').css('display', 'none'); 
+        $('.record_btn').css('display', 'none');
+    }
+
 
     function beginRecording() {
         console.log('beginning the recording');
+        $('.past-search-region').prop('hidden', true);
         let AudioContext = window.AudioContext || window.webkitAudioContext || false; 
 
         navigator.mediaDevices.getUserMedia({ 'audio': true })
@@ -50,7 +58,7 @@ if (navigator.mediaDevices.getUserMedia) {
                 let source = audioCtx.createMediaStreamSource(stream);
                 recorder = new WebAudioRecorder(source, {
                     workerDir: 'javascripts/',
-                    // must use mp3 to work with Safari, but chomr/Firefox accept ogg
+                    // must use mp3 to work with Safari, but chrome/firefox accept ogg
                     encoding: 'ogg'
                 });
 
@@ -69,10 +77,9 @@ if (navigator.mediaDevices.getUserMedia) {
             recorder.startRecording();
 
             recorder.onComplete = function(recorder, blob) {
-                console.log(blob)
+                console.log(blob);
                 audioSrc = window.URL.createObjectURL(blob);
                 audio.src = audioSrc;
-                // createAudioPlayback(blob);
                 POSTreq(blob);
             }
 
@@ -122,8 +129,8 @@ function stopRecording() {
   button.classList.remove('recording');
   btn_status = 'inactive';
 
-  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="txt_btn">${messages.play} (${t})</a><br>
-                            <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
+  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a><br>
+                            <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
 
   var now = Math.ceil( new Date().getTime() / 1000 );
   var t = parseTime( now - time );
@@ -135,23 +142,22 @@ function stopRecording() {
 
   recorder.finishRecording();
 
-  // $('#msg_box').text(`Recorded for ${Math.round(recordingTime)} seconds`);
-  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="txt_btn">${messages.play} (${t})</a><br>
-                            <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
+  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a><br>
+                            <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
   console.log('recording stopped');
 }
 
 function play() {
     audio.play();
-    $('#msg_box').html(`<a href="#" onclick="pause(); return false;" class="txt_btn">${messages.stop}</a><br>
-                        <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
+    $('#msg_box').html(`<a href="#" onclick="pause(); return false;" class="ui-link txt_btn">${messages.stop}</a><br>
+                        <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
 }
 
 function pause() {
     audio.pause();
     audio.currentTime = 0;
-    $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="txt_btn">${messages.play}</a><br>
-                        <a href="#" onclick="save(); return false;" class="txt_btn">${messages.download}</a>`);
+    $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play}</a><br>
+                        <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
 }
 
 function POSTreq (blobData) {
@@ -176,11 +182,11 @@ function POSTreq (blobData) {
 function parseRetrievedData(parseData) {
     console.log('the data from the audD api is: ', parseData);
   if (parseData.result === null || parseData.result === undefined) {
-    $('.combined-api-results').prop('hidden', false);
-    $('.audD-result-title').html(`Unable to identify audio. Try recording for a longer period.`);
+    $('.api-results').prop('hidden', false);
+    $('.audD-result-title').html('Unable to identify audio. Try recording for a longer period or at a higher volume. Also note that Score Search can only identify recordings found in the iTunes store.');
     return; 
   }
-  $('.combined-api-results').prop('hidden', false);
+  $('.api-results').prop('hidden', false);
   $('.audD-result-title').html(parseData.result.title);
   console.log('the initial response from the audD api is: ', parseData);
   getGoogleAPIData(parseData);
@@ -197,7 +203,7 @@ function save() {
 
 } 
 else {
-    if ( location.protocol != 'https:' ) {
+    if (location.protocol !== 'https:') {
         msg_box.innerHTML = messages.mic_error + '<br>'  + messages.use_https;
     } 
     else {
@@ -218,34 +224,33 @@ function getGoogleAPIData(audDData) {
     let musicTitle = audDData.result.title;
 
     const query = {
-    q: musicTitle,
-    key: 'AIzaSyBWdG0-2UnBB1H0Z05xmLlk8NCZxh0UU_o',
-    safe: 'high',
-    num: '5', 
-    cx: '008527752432457752614:gzthzygccjw'
-    }
+        q: musicTitle,
+        key: 'AIzaSyBWdG0-2UnBB1H0Z05xmLlk8NCZxh0UU_o',
+        safe: 'high',
+        num: '5', 
+        cx: '008527752432457752614:gzthzygccjw'
+    };
 
     $.getJSON('https://www.googleapis.com/customsearch/v1', query)
     .done(function(res) {
         renderGoogleAPIData(res, musicTitle);
     })
     .fail(function(errorMessage) {
-    alert('There was a problem with your Google API search.');
+        alert('There was a problem with your Google API search.');
     })
 }
 
 function renderGoogleAPIData(googleData, music_title) {
     console.log('here is the data from the google api: ', googleData);
     if (googleData.items === undefined) {
-        $('.audD-result-title').html(`Unable to retrieve sheet music.`);
+        $('.audD-result-title').html('Unable to retrieve sheet music. Note that Score Search can only return sheet music that is in the public domain.');
     }
     const googleAPIResults = googleData.items.map((item, index) => createGoogleLI(item));
-    $('.combined-api-results').prop('hidden', false);
+    $('.api-results').prop('hidden', false);
     $('.imslp-search-results').html(googleAPIResults);
+    $('.past-search-region').prop('hidden', true);
     if (localStorage.getItem('authToken')) {
-        $('.search-region').prop('hidden', false);
-        $('.save-link').prop('hidden', false);
-
+        $('.save-button').prop('hidden', false);
         STATE.googleData = googleData;
         STATE.musicTitle = music_title;
     }
@@ -299,8 +304,6 @@ function savePastSearchToDB(apiResults, musicTitle) {
     }
   })
 }
-
-// ––– working with DB and DOM manipulation
 
 // function to get an authToken/login the user
 function loginUser(usernm, pass) {
@@ -372,20 +375,19 @@ function displayPastSearchResults(resultData) {
         let searchLinks = "";
 
         for (let j = 0; j < resultData.searches[i].IMSLP_links.length; j++) {
-          searchLinks += (`<li><a href="${resultData.searches[i].IMSLP_links[j]}">${resultData.searches[i].IMSLP_links[j].substring(23, resultData.searches[i].IMSLP_links[j].length - 12)}</a></li>`);
+          searchLinks += (`<li><a href="${resultData.searches[i].IMSLP_links[j]}" target="_blank">${resultData.searches[i].IMSLP_links[j].substring(23, resultData.searches[i].IMSLP_links[j].length - 12)}</a></li>`);
         }
 
         searches.push(
-          `<li data-searchid="${resultData.searches[i].id}" class="search-results">
-            <h3>${resultData.searches[i].creation}</h3>
-            <h3>${resultData.searches[i].music_title}</h3>
+          `<div data-searchid="${resultData.searches[i].id}" class="past-search-items col-xs-12">
             <button type="button" class="delete-button"><i class="fa fa-trash"></i></button>
-            <ul class="search-links">${searchLinks}</ul>
-          </li>`
+            <h3 class="music-title">${resultData.searches[i].music_title}</h3>
+            <h3 class="creation-time">${resultData.searches[i].creation}</h3>
+            <ul class="past-search-links">${searchLinks}</ul>
+          </div>`
         );
     }
-        $('.searches').html(searches);
-        $('.searches').prepend(`<h2 class="searches-username">${resultData.searches[0].username}</h2>`);
+        $('.past-searches').html(searches);
 }
 
 function deleteSearchResultFromDOM(search) {
@@ -431,7 +433,7 @@ $(function() {
         $('.authentication-text').text(`You are logged in as ${username}`);
         $('.mysearches-link').click(function() {
             accessSearches();
-            $('.search-region').prop('hidden', false);
+            $('.past-search-region').prop('hidden', false);
         });
     }
     let modalPropHidden = $('#modal').prop('hidden');
@@ -479,7 +481,9 @@ $(function() {
     });
     // event listener to close out modal
     $(document).click(function(e) {
-        if(!$(e.target).is('#modal') && !$(e.target).is('input') && !$(e.target).is('.signup-form') && !$(e.target).is('.login-form') && !$(e.target).is('.form-positioner')) {
+        if(!$(e.target).is('#modal') && !$(e.target).is('input') && !$(e.target).is('.signup-form') 
+                                     && !$(e.target).is('.login-form') && !$(e.target).is('.form-positioner') 
+                                     && !$(e.target).is('.login-error-box') && !$(e.target).is('.signup-error-box')) {
             setTimeout(function(){
                 modalPropHidden = false;
             }, 300);
@@ -581,16 +585,16 @@ $(function() {
         $('#login-password').val('');
     });
     // event listener link to save a search result 
-    $('.save-link').click(function() {
+    $('.save-button').click(function() {
         savePastSearchToDB(STATE.googleData, STATE.musicTitle);
-        $('.search-region').prop('hidden', true);
-        $('.save-link').prop('hidden', true);
+        $('.past-search-region').prop('hidden', true);
+        $('.save-button').prop('hidden', true);
     });
     // event listener to access past searches
     $('.mysearches-link').click(function() {
         accessSearches();
-        $('.combined-api-results').prop('hidden', true);
-        $('.search-region').prop('hidden', false);
+        $('.api-results').prop('hidden', true);
+        $('.past-search-region').prop('hidden', false);
     });
     // event listener to delete a past search 
     $('body').on('click', '.delete-button', function() {
@@ -601,9 +605,10 @@ $(function() {
     // event listener for loggin out the user
     $('body').on('click', '.logout-link', function() {
         localStorage.removeItem('authToken');
+        $('.past-search-region').prop('hidden', true);
         $('.auth-links-region').prop('hidden', false);
         $('.authentication-region').prop('hidden', true);
-        $('.searches').empty();
+        $('.past-searches').empty();
     });
 });
 

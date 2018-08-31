@@ -1,56 +1,19 @@
+/*record button stylings*/
+
 @import 'https://fonts.googleapis.com/icon?family=Material+Icons|Roboto';
 
-body {
-  background: #fff;
-  font-family: 'Roboto Light';
-  position: relative;
-}
-
-body,
-html {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-* {
-    box-sizing: border-box;
-    outline: none;
-}
-
-.recorder_wrapper {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-}
-
-.recorder {
-    display: inline-block;
-    text-align: center;
-    width: 500px;
-    max-width: 100%;
-}
-
 .record_btn {
-    width: 100px;
-    height: 100px;
+    margin: 1rem;
+    width: 50vw;
+    height: 50vw;
     font-family: 'Material Icons';
-    font-size: 48px;
+    font-size: 25vw;
     color: rgba(0, 0, 0);
     background: none;
     border: 2px solid rgba(0, 0, 0);
     border-radius: 50%;
     cursor: pointer;
     transition: 0.15s linear;
-}
-
-.record_btn:hover {
-    transition: 0.15s linear;
-    transform: scale( 1.05 );
 }
 
 .record_btn:active {
@@ -70,18 +33,8 @@ html {
     color: #ccc;
 }
 
-.record_btn[disabled]:hover {
-    transition: 0.15s linear;
-    transform: none;
-}
-
 .record_btn[disabled]:active {
     background: none;
-}
-
-.recording {
-    animation: recording 2s infinite ease-in-out;
-    position: relative;
 }
 
 .recording:before {
@@ -98,32 +51,6 @@ html {
     animation: recording_before 2s infinite ease-in-out;
 }
 
-@keyframes recording {
-    from {
-        transform: scale( 1.1 );
-    }
-    50% {
-        transform: none;
-    }
-
-    to {
-        transform: scale( 1.1 );
-    }
-}
-
-@keyframes recording_before {
-    80% {
-        width: 200px;
-        height: 200px;
-        margin: -100px;
-        opacity: 0;
-    }
-
-    to {
-        opacity: 0;
-    }
-}
-
 .record_canvas {
     width: 60px;
     height: 100px;
@@ -132,74 +59,275 @@ html {
 }
 
 .txt_btn {
-    color: #000;
-    text-decoration: none;
     transition: 0.15s linear;
     animation: text_btn 0.3s ease-in-out;
 }
 
+/*general stylings*/
+@import url('https://fonts.googleapis.com/css?family=Libre+Baskerville');
 
+body {
+  background: #fff;
+  font-family: 'Libre Baskerville', serif;
+  position: relative;
+}
 
+body,
+html {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
 
-/*my styles*/
+* {
+    box-sizing: border-box;
+    outline: 0;
+}
+
+/*flex formatting*/
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.col-xs-12 {
+    flex-basis: 100%;
+    max-width: 100%;
+}
+
+.col-md-6 {
+    flex-basis: 50%;
+    max-width: 50%;
+}
+
+/*DOM stylings*/
+header {
+    padding: .3rem 1rem;
+}
+
+.recorder {
+    text-align: center;
+    line-height: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.past-search-region {
+
+}
+
+h1, h2, h3, p {
+    margin: 0;
+}
 
 a {
     text-decoration: none;
+    word-wrap: break-word;
+    font-size: 1.1rem;
 }
 
-a:hover {
-    
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+button {
+    cursor: pointer;
+    font-family: 'Libre Baskerville', serif;
+    padding: .2rem;
+}
+
+input {
+    padding: .2rem;
+    margin-bottom: 10px;
+    border: 1px solid rgb(191, 191, 191);
+    background: rgb(255, 255, 255);
+    border-radius: 2px;
+}
+
+input[type=submit] {
+    cursor: pointer;
+}
+
+.page-title {
+    font-size: 2rem;
+}
+
+.ui-link {
+    margin-bottom: 1rem;
+}
+
+.searches-username {
+    padding: 0 1rem;
+}
+
+.past-search-items {
+    border: 1px solid rgba(0, 0, 0, .5);
+    border-top: none;
+    position: relative;
+    padding: .3rem 1rem;
+}
+
+.past-search-links:last-child {
+    padding-bottom: 1rem;
+}
+
+.past-search-links {
+    margin-bottom: 3vh;
+}
+
+.past-search-links li {
+    margin-bottom: .5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.delete-button {
+    cursor: pointer;
+    border: none;
+    font-size: 10vw;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: none;
+    padding-right: .5rem;
 }
 
 #modal {
     background: rgb(255, 255, 255);
-    width: 600px;
-    height: 350px;
-    padding: 20px;
+    border-radius: 2px;
+    width: 80vw;
+    height: 50vh;
     position: absolute;
     top: 50%;
     left: 50%;
-    margin: -175px 0 0 -300px;
-    z-index: 9999;
+    margin: -25vh 0 0 -40vw;
 }
 
 .form-positioner {
-    width: 600px;
-    height: 350px;
-    padding: 20px;
+    width: 80vw;
+    height: 50vh;
     position: relative;
     top: 50%;
     left: 50%;
-    margin: -175px 0 0 -300px;
+    margin: -25vh 0 0 -40vw;
 }
 
-.login-form {
+.signup-form, .login-form {
+    margin-top: .6rem;
     position: absolute;
-    padding: 20px;
-    width: 300px;
-    height: 300px;
-    top: 75%;
+    top: 50%;
     left: 50%;
-    margin: -150px 0 0 -150px;
+    transform: translate(-50%, -50%);
 }
 
-.signup-form {
-    position: absolute;
-    padding: 20px;
-    width: 300px;
-    height: 300px;
-    top: 75%;
-    left: 50%;
-    margin: -150px 0 0 -150px;
+.signup-error-box, .login-error-box {
+    padding-top: 1.5rem;
+    text-align: center;
+    color: rgba(0, 0, 0, .5);
 }
 
-.page-title {
-    padding: 20px;
+.api-results {
+    padding: 0 1rem;
 }
 
-input {
-    margin-bottom: 10px;
+.save-button {
+    border: 1px solid black;
+    background: white;
+    border-radius: 2px;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
 }
+
+/*large phone/tablet breakpoint*/
+@media only screen and (min-width: 600px) {
+    a, input, label, h3, h2 {
+        font-size: 1.5rem;
+    }
+    input {
+        padding: .3rem;
+    }
+    .page-title {
+        font-size: 3.5rem;
+    }
+    .recorder {
+        font-size: 1.5rem;
+    }
+    #msg_box {
+        font-size: 1.8rem;
+        margin-bottom: .3rem
+    }
+    .signup-error-box, .login-error-box {
+        font-size: 1.5rem;
+        padding-top: 3.5rem;
+    }
+    .authentication-text {
+        padding: .5rem;
+    }
+    .music-title {
+        padding-top: .3rem;
+    }
+    .record_btn {
+        margin: 2rem;
+        width: 40vw;
+        height: 40vw;
+        font-size: 25vw;
+    }
+    .past-search-links {
+        margin-bottom: 4.5rem;
+    }
+    .delete-button {
+        font-size: 4rem;
+        padding-right: 1rem;
+    }
+    .save-button {
+        padding: .5rem;
+        font-size: 2rem;
+    }
+    .google-api-result-li {
+        padding-bottom: .3rem;
+    }
+    .text_btn {
+        line-height: 2rem;
+    }
+    .ui-link {
+        padding: 0 .5rem;
+        font-size: 2rem;
+        line-height: 2.5rem;
+    }
+}
+
+/*larger tablets/tablets in landscape/small laptops and desktop computers*/
+@media only screen and (min-width: 992px) {
+    label, .authentication-text, #msg_box, h3, h2  {
+        font-size: 2rem;
+    }
+    a {
+        font-size: 1.8rem;
+    }
+    .record_btn {
+        width: 30vw;
+        height: 30vw;
+        font-size: 20vw;
+    }
+}
+
+/*any larger devices*/
+@media only screen and (min-width: 1200px) {
+    .record_btn {
+        width: 20vw;
+        height: 20vw;
+        font-size: 15vw;
+    }
+    #modal {
+        width: 40vw;
+        height: 40vh;
+        margin: -20vh 0 0 -20vw;
+    }
+}
+
 
 
 
