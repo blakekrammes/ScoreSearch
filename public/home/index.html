@@ -16,33 +16,32 @@
         <h3 class="site-description">Identify Classical Music by Recording and Find the Sheet Music</h3>
       </header>
       <section class="recorder col-xs-12" role="region">
-          <button class="record_btn" id="button"></button>
-          <p id="msg_box"></p>
-          <section class="auth-links-region" role="region">
+          <button class="record_btn" id="button" aria-label="record button"></button>
+          <p id="msg_box" aria-live="assertive"></p>
+          <section class="auth-links-region" role="region" aria-live="assertive">
             <a href="#" class="ui-link signup">Signup</a>
             <a href="#" class="ui-link login">Login</a>
           </section>
-            <section class="authentication-region" role="region" hidden>
-              <p class="authentication-text"></p>
+            <section class="authentication-region" role="region" aria-live="polite" hidden>
+              <p class="authentication-text" ></p>
               <a href="#" class="ui-link mysearches-link">My Searches</a>
               <a href="#" class="ui-link logout-link">Logout</a>
             </section>
       </section>
-      <section class="past-search-region col-xs-12" role="region" hidden>
-        <h2 class="searches-username"></h2>
-        <div class="past-searches row">
-        </div>
+      <section class="past-search-region col-xs-12" role="region" aria-live="assertive" hidden>
+        <section class="past-searches row" role="region">
+        </section>
       </section>
-      <section class="api-results" role="region" hidden>
+      <section class="api-results" role="region" aria-live="assertive" hidden>
         <h2 class="audD-result-title"></h2>
         <section class="imslp-results" role="region">
           <ul class="imslp-search-results">
           </ul>
-          <button href="#" class="save-button" hidden>Save</button>
+          <button href="#" class="save-button" role="button" hidden>Save</button>
         </section>
       </section>
     </section>
-    <section id="modal" class="col-xs-12" role="region" hidden></section>
+    <section id="modal" class="col-xs-12" role="region" aria-live="assertive" hidden></section>
     <script src="javascripts/WebAudioRecorder.js"></script>
     <script src="index.js"></script>
   </body>

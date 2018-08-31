@@ -380,10 +380,10 @@ function displayPastSearchResults(resultData) {
 
         searches.push(
           `<div data-searchid="${resultData.searches[i].id}" class="past-search-items col-xs-12">
-            <button type="button" class="delete-button"><i class="fa fa-trash"></i></button>
             <h3 class="music-title">${resultData.searches[i].music_title}</h3>
             <h3 class="creation-time">${resultData.searches[i].creation}</h3>
             <ul class="past-search-links">${searchLinks}</ul>
+            <button type="button" class="delete-button" aria-label="delete button"><i class="fa fa-trash"></i></button>
           </div>`
         );
     }
@@ -391,7 +391,7 @@ function displayPastSearchResults(resultData) {
 }
 
 function deleteSearchResultFromDOM(search) {
-  $(search).closest('li').remove();
+  $(search).closest('div').remove();
 }
 
 function deleteSearchResultFromDB(searchID) {
@@ -599,7 +599,7 @@ $(function() {
     // event listener to delete a past search 
     $('body').on('click', '.delete-button', function() {
       deleteSearchResultFromDOM(this);
-      let pastSearchID = $(this).closest('li').data('searchid');
+      let pastSearchID = $(this).closest('div').data('searchid');
       deleteSearchResultFromDB(pastSearchID);
     });
     // event listener for loggin out the user
@@ -611,16 +611,3 @@ $(function() {
         $('.past-searches').empty();
     });
 });
-
-// code to bypass wait time on IMSLP (suspect)
-// function checkForRedirect(url) {
-//     var waitTimer = document.getElementById('sm_dl_wait'),
-//         nextUrl;
-
-//     if (waitTimer !== null && document.domain === 'imslp.org') {
-//         nextUrl = waitTimer.getAttribute('data-id');
-//         window.location.href = nextUrl;
-//     }
-// };
-
-// checkForRedirect(window.location.href);
