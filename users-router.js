@@ -13,7 +13,6 @@ const { Users, PastSearches } = require('./model');
 
 router.get('/', (req, res) => {
 	console.log('Retrieving Users');
-	// res.sendFile(__dirname + '/public/searches/dummysearches.html');
 	Users.find()
 	.then(users => {
 		res.json({

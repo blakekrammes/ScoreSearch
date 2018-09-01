@@ -77,7 +77,6 @@ if (navigator.mediaDevices.getUserMedia) {
             recorder.startRecording();
 
             recorder.onComplete = function(recorder, blob) {
-                console.log(blob);
                 audioSrc = window.URL.createObjectURL(blob);
                 audio.src = audioSrc;
                 POSTreq(blob);
@@ -124,7 +123,6 @@ if (navigator.mediaDevices.getUserMedia) {
 function stopRecording() {
   console.log('stopping the recording');
   let recordingTime = recorder.recordingTime();
-  console.log(recordingTime);
 
   button.classList.remove('recording');
   btn_status = 'inactive';
@@ -136,7 +134,6 @@ function stopRecording() {
   var t = parseTime( now - time );
 
   let audioTrack = gumStream.getAudioTracks()[0];
-  console.log(audioTrack);
 
   audioTrack.stop();
 
@@ -181,8 +178,6 @@ function POSTreq (blobData) {
 }
 
 function parseRetrievedData(parseData) {
-    console.log('the data from the audD api is: ', parseData);
-
   if (parseData.result === null || parseData.result === undefined) {
     $('.fetching-message').remove();
     $('.api-results').prop('hidden', false);
@@ -191,7 +186,6 @@ function parseRetrievedData(parseData) {
   }
   $('.api-results').prop('hidden', false);
   $('.audD-result-title').html(parseData.result.title);
-  console.log('the initial response from the audD api is: ', parseData);
   getGoogleAPIData(parseData);
 }
 
@@ -244,7 +238,6 @@ function getGoogleAPIData(audDData) {
 }
 
 function renderGoogleAPIData(googleData, music_title) {
-    console.log('here is the data from the google api: ', googleData);
     if (googleData.items === undefined) {
         $('.fetching-message').remove();
         $('.audD-result-title').html('Unable to retrieve sheet music. Note that Score Search can only return sheet music that is in the public domain.');
@@ -302,7 +295,6 @@ function savePastSearchToDB(apiResults, musicTitle) {
     contentType: 'application/json',
     data: JSON.stringify(savedSearch),
     success: function(res, status, xhr) {
-      console.log('the response from saving a search is: ', res);
     },
     error: function(err) {
       console.error('There was an error in saving the search: ', err);
@@ -336,7 +328,6 @@ function loginUser(usernm, pass) {
              // set the auth token to a variable to retrieve it
              let authToken = localStorage.getItem('authToken');
              $('.authentication-region').prop('hidden', false);
-             console.log('the current authToken is:', authToken);
              $('.authentication-text').text(`You are logged in as ${usernm}`);
         },
         error: function(err) {
@@ -411,7 +402,6 @@ function deleteSearchResultFromDB(searchID) {
     url: `${baseUrl}/searches/${searchID}`,
     type: 'DELETE',
     success: function(res, status, xhr) {
-      console.log('Here is the response', res, status, xhr);
     },
     error: function(err) {
       console.error('There was an Error: ', err);
