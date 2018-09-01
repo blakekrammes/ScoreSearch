@@ -10,7 +10,7 @@ var msg_box = document.getElementById( 'msg_box' ),
         'recording': 'Recording', 
         'play': 'Play', 
         'stop': 'Stop',
-        'download': 'Download', 
+        'download': 'Download recording', 
         'use_https': 'This application will not work over an insecure connection. Use HTTPS.',
         'not_supported_in_safari_or_edge': 'Score Search is not yet supported in Safari or Edge. Please use Chrome or Firefox instead'
     },
@@ -39,6 +39,7 @@ if (navigator.mediaDevices.getUserMedia) {
     function beginRecording() {
         console.log('beginning the recording');
         $('.past-search-region').prop('hidden', true);
+        $('.api-results').prop('hidden', true);
         let AudioContext = window.AudioContext || window.webkitAudioContext || false; 
 
         navigator.mediaDevices.getUserMedia({ 'audio': true })
@@ -56,7 +57,7 @@ if (navigator.mediaDevices.getUserMedia) {
                 gumStream = stream;
                 let source = audioCtx.createMediaStreamSource(stream);
                 recorder = new WebAudioRecorder(source, {
-                    workerDir: 'javascripts/',
+                    workerDir: 'web_audio_recorder_js/',
                     // must use mp3 to work with Safari, but chrome/firefox accept ogg
                     encoding: 'ogg'
                 });
@@ -176,11 +177,14 @@ function POSTreq (blobData) {
   xhr.open('POST', 'https://api.audd.io/');
   xhr.responseType = 'json';
   xhr.send(fd);
+  $('.recorder').append('<p class="fetching-message" aria-live="assertive">Fetching search results</p>');
 }
 
 function parseRetrievedData(parseData) {
     console.log('the data from the audD api is: ', parseData);
+
   if (parseData.result === null || parseData.result === undefined) {
+    $('.fetching-message').remove();
     $('.api-results').prop('hidden', false);
     $('.audD-result-title').html('Unable to identify audio. Try recording for a longer period or at a higher volume. Also note that Score Search can only identify recordings found in the iTunes store.');
     return; 
@@ -242,8 +246,10 @@ function getGoogleAPIData(audDData) {
 function renderGoogleAPIData(googleData, music_title) {
     console.log('here is the data from the google api: ', googleData);
     if (googleData.items === undefined) {
+        $('.fetching-message').remove();
         $('.audD-result-title').html('Unable to retrieve sheet music. Note that Score Search can only return sheet music that is in the public domain.');
     }
+    $('.fetching-message').remove();
     const googleAPIResults = googleData.items.map((item, index) => createGoogleLI(item));
     $('.api-results').prop('hidden', false);
     $('.imslp-search-results').html(googleAPIResults);

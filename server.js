@@ -14,16 +14,14 @@ const { PORT, DATABASE_URL } = require('./config');
 
 const usersRouter = require('./users-router');
 const searchesRouter = require('./searches-router');
-const mysearchesRouter = require('./my-searches-router');
-const jsonsearchesRouter = require('./json-searches-router');
 
 app.use(cors());
 app.use(morgan('common')); 
-app.use(express.static('public/home'));
+app.use(express.static('public'));
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/home/index.html');
+  res.sendFile(__dirname + '/public/index.html');
 });
 
 // passport auth strategies
@@ -32,8 +30,6 @@ passport.use(jwtStrategy);
 
 app.use('/users', usersRouter);
 app.use('/searches', searchesRouter);
-app.use('/mysearches', mysearchesRouter);
-app.use('/jsonsearches', jsonsearchesRouter);
 app.use('/auth', authRouter);
 
 // catch-all endpoint if client makes request to non-existent endpoint

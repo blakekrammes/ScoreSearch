@@ -117,7 +117,7 @@ html {
 
 * {
     box-sizing: border-box;
-    outline: 0;
+    outline: none;
 }
 
 /*flex formatting*/
@@ -281,8 +281,11 @@ input[type=submit] {
 }
 /*large phone/tablet breakpoint*/
 @media only screen and (min-width: 600px) {
-    a, input, label, h2, h3 {
-        font-size: 1.6rem;
+    a, input, label, h2, h3, p {
+        font-size: 1.8rem;
+    }
+    p {
+        margin-top: .5rem;
     }
     input {
         padding: .3rem;
@@ -348,7 +351,7 @@ input[type=submit] {
 
 /*larger tablets/tablets in landscape/small laptops and desktop computers*/
 @media only screen and (min-width: 992px) {
-    label, .authentication-text, #msg_box, h3, h2  {
+    label, .authentication-text, #msg_box, h3, h2, p  {
         font-size: 2rem;
     }
     a {

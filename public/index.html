@@ -3,7 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>ScoreSearch</title>
+    <meta name="description" content="Identify Classical Music by Recording Your Device's Input and Find the Sheet Music on IMSLP.">
+    <title>Score Search</title>
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
     <link href="index.css" rel="stylesheet" type="text/css" />
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   </head>
@@ -15,10 +17,9 @@
       </header>
       <section class="recorder col-xs-12" role="region">
           <button class="record_btn" id="button" aria-label="record button"></button>
-
           <p id="msg_box" aria-live="assertive"></p>
-          <a href="#" class="usage-details">*</a>
-          <p class="instructions" hidden>
+          <a href="#" aria-label="instructions" class="usage-details">*</a>
+          <p class="instructions" aria-live="polite" hidden>
             For best results, record for at least 20 seconds.
             The recorded audio must be a recording found in the iTunes store and
             the recording must be a piece of classical music in the public domain to retrieve sheet music.
@@ -47,7 +48,7 @@
       </section>
     </section>
     <section id="modal" class="col-xs-12" role="region" aria-live="assertive" hidden></section>
-    <script src="javascripts/WebAudioRecorder.js"></script>
+    <script src="web_audio_recorder_js/WebAudioRecorder.js"></script>
     <script src="index.js"></script>
   </body>
 </html>
