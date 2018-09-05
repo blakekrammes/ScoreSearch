@@ -40,6 +40,7 @@ if (navigator.mediaDevices.getUserMedia) {
         console.log('beginning the recording');
         $('.past-search-region').prop('hidden', true);
         $('.api-results').prop('hidden', true);
+        $('.sheet-music-message').remove();
         let AudioContext = window.AudioContext || window.webkitAudioContext || false; 
 
         navigator.mediaDevices.getUserMedia({ 'audio': true })
@@ -182,6 +183,7 @@ function parseRetrievedData(parseData) {
     $('.fetching-message').remove();
     $('.api-results').prop('hidden', false);
     $('.audD-result-title').html('Unable to identify audio. Try recording for a longer period or at a higher volume. Also note that Score Search can only identify recordings found in the iTunes store.');
+    $('.imslp-search-results').html('');
     return; 
   }
   $('.api-results').prop('hidden', false);
@@ -240,7 +242,7 @@ function getGoogleAPIData(audDData) {
 function renderGoogleAPIData(googleData, music_title) {
     if (googleData.items === undefined) {
         $('.fetching-message').remove();
-        $('.audD-result-title').html('Unable to retrieve sheet music. Note that Score Search can only return sheet music that is in the public domain.');
+        $('.audD-result-title').append('<p class="sheet-music-message">Unable to retrieve sheet music. Note that Score Search can only return sheet music that is in the public domain.</p>');
     }
     $('.fetching-message').remove();
     const googleAPIResults = googleData.items.map((item, index) => createGoogleLI(item));
