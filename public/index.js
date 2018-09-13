@@ -329,6 +329,7 @@ function loginUser(usernm, pass) {
              localStorage.setItem('authToken', res.authToken);
              // set the auth token to a variable to retrieve it
              let authToken = localStorage.getItem('authToken');
+             console.log('the current authToken is ', authToken);
              $('.authentication-region').prop('hidden', false);
              $('.authentication-text').text(`You are logged in as ${usernm}`);
         },
