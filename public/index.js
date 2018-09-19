@@ -1,10 +1,10 @@
 // global variable for storing local variables 
 const STATE = {};
 
-var msg_box = document.getElementById( 'msg_box' ),
-    button = document.getElementById( 'button' ),
-    canvas = document.getElementById( 'canvas' ),
-    messages = {
+let msg_box = document.getElementById('msg_box');
+let button = document.getElementById('button');
+let canvas = document.getElementById('canvas');
+let messages = {
         'mic_error': 'Error accessing the microphone', 
         'press_to_start': 'Click above to begin recording', 
         'recording': 'Recording', 
@@ -62,7 +62,6 @@ if (navigator.mediaDevices.getUserMedia) {
                     // must use mp3 to work with Safari, but chrome/firefox accept ogg
                     encoding: 'ogg'
                 });
-
             } 
             else {
                 alert('The Web Audio API is not supported.');
@@ -607,9 +606,12 @@ $(function() {
     });
     // event listener to delete a past search 
     $('body').on('click', '.delete-button', function() {
-      deleteSearchResultFromDOM(this);
-      let pastSearchID = $(this).closest('div').data('searchid');
-      deleteSearchResultFromDB(pastSearchID);
+        let confirmDelete = confirm('Are you sure you want to delete this?');
+        if (confirmDelete === true) { 
+            deleteSearchResultFromDOM(this);
+            let pastSearchID = $(this).closest('div').data('searchid');
+            deleteSearchResultFromDB(pastSearchID);
+        }
     });
     // event listener for loggin out the user
     $('body').on('click', '.logout-link', function() {

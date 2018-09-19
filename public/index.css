@@ -100,10 +100,13 @@
 
 /*general stylings*/
 @import url('https://fonts.googleapis.com/css?family=Libre+Baskerville');
+@import url('https://fonts.googleapis.com/css?family=Montserrat:100,200,400');
 
 body {
-  background: #fff;
-  font-family: 'Libre Baskerville', serif;
+    background: rgb(255, 255, 255);
+  /*background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://upload.wikimedia.org/wikipedia/commons/9/96/Chopin_Ballade_1.png') no-repeat center center fixed;
+  background-size: cover;*/
+  font-family: 'Montserrat', sans-serif;
   position: relative;
 }
 
@@ -139,6 +142,8 @@ html {
 
 /*DOM stylings*/
 header {
+    color: rgb(255, 255, 255);
+    background: rgb(0, 0, 0);
     padding: .3rem 1rem;
 }
 
@@ -152,10 +157,21 @@ h1, h2, h3, p {
     margin: 0;
 }
 
+h1, h2, h3 {
+    font-weight: 200;
+}
+
 a {
+    color: rgb(31, 112, 25);
     text-decoration: none;
     word-wrap: break-word;
     font-size: 1.1rem;
+    transition: .3s;
+}
+
+a:hover {
+    color: rgba(31, 112, 25, .7);
+    transition: .3s;
 }
 
 ul {
@@ -165,11 +181,11 @@ ul {
 
 button {
     cursor: pointer;
-    font-family: 'Libre Baskerville', serif;
     padding: .2rem;
 }
 
 input {
+    font-family: 'Montserrat', sans-serif;
     padding: .2rem;
     margin-bottom: 10px;
     border: 1px solid rgb(191, 191, 191);
@@ -183,6 +199,10 @@ input[type=submit] {
 
 .page-title {
     font-size: 2rem;
+}
+
+.music-title, .creation-time {
+    font-weight: 400;
 }
 
 .ui-link {
@@ -218,6 +238,16 @@ input[type=submit] {
     bottom: 0;
     right: 0;
     background: none;
+    transition: 0.3s;
+}
+
+.delete-button:hover {
+    color: rgba(0, 0, 0, .7);
+    transition: 0.3s;
+
+    .past-search-items {
+        background: blue;
+    }
 }
 
 #modal {
@@ -229,6 +259,7 @@ input[type=submit] {
     top: 50%;
     left: 50%;
     margin: -25vh 0 0 -40vw;
+    box-shadow: .4rem .4rem .4rem;
 }
 
 #msg_box {
@@ -236,7 +267,7 @@ input[type=submit] {
 }
 
 .instructions {
-    line-height: 1.2rem;
+    line-height: 2.3rem;
     border-bottom: 1px solid rgba(0, 0, 0, .5);
     padding-bottom: .3rem;
 }
@@ -342,7 +373,6 @@ input[type=submit] {
     }
     .instructions {
         font-size: 1.8rem;
-        line-height: 2rem;
         padding: 0 .3rem;
         padding-bottom: .3rem;
         margin-top: 1rem;
