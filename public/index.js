@@ -40,6 +40,10 @@ if (navigator.mediaDevices.getUserMedia) {
         console.log('beginning the recording');
         $('.past-search-region').prop('hidden', true);
         $('.api-results').prop('hidden', true);
+        $('.authentication-region').prop('hidden', true);
+        $('.auth-links-region').prop('hidden', true);
+        $('.usage-details').prop('hidden', true);
+        $('.instructions').prop('hidden', true);
         $('.sheet-music-message').remove();
         let AudioContext = window.AudioContext || window.webkitAudioContext || false; 
 
@@ -123,6 +127,9 @@ if (navigator.mediaDevices.getUserMedia) {
 function stopRecording() {
   console.log('stopping the recording');
   let recordingTime = recorder.recordingTime();
+  $('.authentication-region').prop('hidden', false);
+  $('.auth-links-region').prop('hidden', false);
+  $('.usage-details').prop('hidden', false);
 
   button.classList.remove('recording');
   btn_status = 'inactive';
@@ -460,7 +467,10 @@ $(function() {
                     <input type="submit" value="Signup">
                 </form>
             </div>
-            `)
+            `);
+        setTimeout(function() { 
+            $('#signup-username').focus(); 
+        }, 1);
         modalPropHidden = true;
         if (typeof modalPropHidden !== typeof undefined && modalPropHidden !== false) {
             $('#modal').prop('hidden', false);
@@ -480,7 +490,10 @@ $(function() {
                     <input type="submit" value="Login">
                 </form>
             </div>
-            `)
+            `);
+        setTimeout(function() { 
+            $('#login-username').focus(); 
+        }, 1);
         modalPropHidden = true;
         if (typeof modalPropHidden !== typeof undefined && modalPropHidden !== false) {
             $('#modal').prop('hidden', false);
@@ -621,4 +634,10 @@ $(function() {
         $('.authentication-region').prop('hidden', true);
         $('.past-searches').empty();
     });
+    $(document).keydown(function(e) { 
+    if (e.keyCode == 27) { 
+        $('#modal').prop('hidden', true);
+        $('body').css('background', 'rgb(255, 255, 255)');
+    } 
+});
 });

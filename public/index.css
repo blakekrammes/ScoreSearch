@@ -10,10 +10,15 @@
     font-size: 25vw;
     color: rgba(0, 0, 0);
     background: none;
-    border: 2px solid rgba(0, 0, 0);
+    border: 2px solid rgb(0, 0, 0);
     border-radius: 50%;
     cursor: pointer;
-    transition: 0.15s linear;
+    transition: .2s;
+}
+
+.record_btn:hover {
+    transform: scale(1.05);
+    transition: .2s;
 }
 
 .record_btn:active {
@@ -104,10 +109,8 @@
 
 body {
     background: rgb(255, 255, 255);
-  /*background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://upload.wikimedia.org/wikipedia/commons/9/96/Chopin_Ballade_1.png') no-repeat center center fixed;
-  background-size: cover;*/
-  font-family: 'Montserrat', sans-serif;
-  position: relative;
+    font-family: 'Montserrat', sans-serif;
+    position: relative;
 }
 
 body,
@@ -162,7 +165,7 @@ h1, h2, h3 {
 }
 
 a {
-    color: rgb(31, 112, 25);
+    color: rgb(29, 100, 22);
     text-decoration: none;
     word-wrap: break-word;
     font-size: 1.1rem;
@@ -170,7 +173,7 @@ a {
 }
 
 a:hover {
-    color: rgba(31, 112, 25, .7);
+    color: rgba(29, 100, 22, .8);
     transition: .3s;
 }
 
@@ -205,6 +208,11 @@ input[type=submit] {
     font-weight: 400;
 }
 
+.creation-time {
+    border-bottom: .1rem solid rgba(0, 0, 0, .1);
+    padding-bottom: .5rem;
+}
+
 .ui-link {
     margin-bottom: 1rem;
 }
@@ -229,6 +237,8 @@ input[type=submit] {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding-bottom: .5rem;
+    border-bottom: .1rem solid rgba(0, 0, 0, .1);
 }
 
 .delete-button {
@@ -295,11 +305,24 @@ input[type=submit] {
     color: rgba(0, 0, 0, .5);
 }
 
+.audD-result-title {
+    font-weight: 400;
+    border-bottom: .1rem solid rgba(0, 0, 0, .1);
+    padding-bottom: .5rem;
+}
+
 .api-results {
     padding: 0 1rem;
 }
 
+.google-api-result-li {
+    border-bottom: .1rem solid rgba(0, 0, 0, .1);
+    padding-bottom: .3rem;
+    margin-bottom: .3rem;
+}
+
 .save-button {
+    font-family: 'Montserrat', sans-serif;
     border: 1px solid black;
     background: white;
     border-radius: 2px;
@@ -412,9 +435,14 @@ input[type=submit] {
         font-size: 15vw;
     }
     #modal {
-        width: 40vw;
-        height: 40vh;
-        margin: -20vh 0 0 -20vw;
+        width: 70vw;
+        height: 60vh;
+        margin: -30vh 0 0 -35vw;
+    }
+    .form-positioner {
+        width: 70vw;
+        height: 60vh;
+        margin: -30vh 0 0 -35vw;
     }
 }
 
