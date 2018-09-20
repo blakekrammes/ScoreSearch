@@ -13,12 +13,12 @@
     border: 2px solid rgb(0, 0, 0);
     border-radius: 50%;
     cursor: pointer;
-    transition: .2s;
+    transition: .3s;
 }
 
 .record_btn:hover {
     transform: scale(1.05);
-    transition: .2s;
+    transition: .3s;
 }
 
 .record_btn:active {
@@ -277,7 +277,7 @@ input[type=submit] {
 }
 
 .instructions {
-    line-height: 2.3rem;
+    line-height: 1.5rem;
     border-bottom: 1px solid rgba(0, 0, 0, .5);
     padding-bottom: .3rem;
 }
@@ -323,7 +323,7 @@ input[type=submit] {
 
 .save-button {
     font-family: 'Montserrat', sans-serif;
-    border: 1px solid black;
+    border: 1px solid rgba(0, 0, 0, .3);
     background: white;
     border-radius: 2px;
     font-size: 1.5rem;
@@ -399,6 +399,7 @@ input[type=submit] {
         padding: 0 .3rem;
         padding-bottom: .3rem;
         margin-top: 1rem;
+        line-height: 2.3rem;
     }
 }
 
@@ -423,8 +424,7 @@ input[type=submit] {
     }
     #msg_box {
         margin-bottom: 2.6rem;
-    }
-    
+    } 
 }
 
 /*any larger devices*/
