@@ -127,8 +127,11 @@ if (navigator.mediaDevices.getUserMedia) {
 function stopRecording() {
   console.log('stopping the recording');
   let recordingTime = recorder.recordingTime();
-  $('.authentication-region').prop('hidden', false);
   $('.auth-links-region').prop('hidden', false);
+  if (localStorage.getItem('authToken')) {
+    $('.authentication-region').prop('hidden', false);
+    $('.auth-links-region').prop('hidden', true);
+  }
   $('.usage-details').prop('hidden', false);
 
   button.classList.remove('recording');
