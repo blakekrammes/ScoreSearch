@@ -1,7 +1,7 @@
 // global variable for storing local variables 
 const STATE = {};
 
-window.MediaRecorder = require('audio-recorder-polyfill')
+// window.MediaRecorder = require('audio-recorder-polyfill')
 
 let msg_box = document.getElementById('msg_box');
 let button = document.getElementById('button');
@@ -60,7 +60,7 @@ if (navigator.mediaDevices.getUserMedia) {
 
             time = Math.ceil( new Date().getTime() / 1000 );
 
-            if (AudioContext === webkitAudioContext) {
+            if (AudioContext === window.webkitAudioContext) {
 
                 let recorder;
                 console.log(recorder)
@@ -183,8 +183,8 @@ function stopRecording() {
   button.classList.remove('recording');
   btn_status = 'inactive';
 
-  $('#msg_box').html(`<p class="par-pos"><a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a></p>
-                            <p class="par-pos"><a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a></p>`);
+  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a><br>
+                            <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
 
   var now = Math.ceil( new Date().getTime() / 1000 );
   var t = parseTime( now - time );
@@ -195,22 +195,22 @@ function stopRecording() {
 
   recorder.finishRecording();
 
-  $('#msg_box').html(`<p class="par-pos"><a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a></p>
-                            <p class="par-pos"><a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a></p>`);
+  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a><br>
+                            <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
   console.log('recording stopped');
 }
 
 function play() {
     audio.play();
-    $('#msg_box').html(`<p class="par-pos"><a href="#" onclick="pause(); return false;" class="ui-link txt_btn">${messages.stop}</a></p>
-                        <p class="par-pos"><a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a></p>`);
+    $('#msg_box').html(`<a href="#" onclick="pause(); return false;" class="ui-link txt_btn">${messages.stop}</a><br>
+                        <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
 }
 
 function pause() {
     audio.pause();
     audio.currentTime = 0;
-    $('#msg_box').html(`<p class="par-pos"><a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play}</a></p>
-                        <p class="par-pos"><a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a></p>`);
+    $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play}</a><br>
+                        <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
 }
 
 function POSTreq (blobData) {
@@ -234,7 +234,7 @@ function POSTreq (blobData) {
 }
 
 function parseRetrievedData(parseData) {
-  if (parseData.result === null || parseData.result === undefined) {
+  if (parseData === null || parseData.result === null || parseData.result === undefined) {
     $('.fetching-message').remove();
     $('.api-results').prop('hidden', false);
     $('.audD-result-title').html('Unable to identify audio. Try recording for a longer period or at a higher volume. Also note that Score Search can only identify recordings found in the iTunes store.');
@@ -309,6 +309,11 @@ function renderGoogleAPIData(googleData, music_title) {
         STATE.googleData = googleData;
         STATE.musicTitle = music_title;
     }
+    else if ($('.authentication-text:contains("you are logged in as monsieur demo")')) {
+        $('.save-button').prop('hidden', false);
+        STATE.googleData = googleData;
+        STATE.musicTitle = music_title;
+    }
 }
 
 function savePastSearchToDB(apiResults, musicTitle) {
@@ -357,6 +362,10 @@ function savePastSearchToDB(apiResults, musicTitle) {
       console.error('There was an error in saving the search: ', err);
     }
   })
+}
+
+function savePastDemoSearch(apiResults, musicTitle) {
+
 }
 
 // function to get an authToken/login the user
@@ -423,6 +432,10 @@ function accessSearches() {
     })
 }
 
+// function accessDemoSearches() {
+
+// }
+
 function displayPastSearchResults(resultData) {
     const searches = [];
     for (let i = 0; i < resultData.searches.length; i++) {
@@ -444,8 +457,58 @@ function displayPastSearchResults(resultData) {
         $('.past-searches').html(searches);
 }
 
+
+const demoSearches = [];
+
+function showDemoSearches() {
+
+    if (demoSearches.length > 0) {
+        return;
+    }
+    
+    demoSearches.push(
+          `<div data-searchid="1234" class="past-search-items col-xs-12">
+            <h3 class="music-title">The Blue Danube</h3>
+            <h3 class="creation-time">Mon November 5 11:25</h3>
+            <ul class="past-search-links">
+                <li><a href="https://imslp.org/wiki/An_der_sch%C3%B6nen_blauen_Donau%2C_Op.314_(Strauss_Jr.%2C_Johann)#Sheet_Music" target="_blank">The Blue Danube</a></li>
+                <li><a href="https://imslp.org/wiki/Gems_of_the_Beautiful_Blue_Danube_Waltzes_(Hayden%2C_Winslow_Lewis)#Sheet_Music" target="_blank">Gems of the Beautiful Blue Danube Waltzes</a></li>
+            </ul>
+            <button type="button" class="delete-button" aria-label="delete button"><i class="material-icons">delete_forever</i></button>
+          </div>`
+    );
+    demoSearches.push(
+          `<div data-searchid="1235" class="past-search-items col-xs-12">
+            <h3 class="music-title">Brandenburg Concerto 1</h3>
+            <h3 class="creation-time">Mon November 5 16:40</h3>
+            <ul class="past-search-links">
+                <li><a href="https://imslp.org/wiki/Brandenburg_Concerto_No.1_in_F_major%2C_BWV_1046_(Bach%2C_Johann_Sebastian)#Sheet_Music" target="_blank">Brandenburg Concerto 1</a></li>
+                <li><a href="https://imslp.org/wiki/Brandenburg_Concertos,_BWV_1046-51_(Bach,_Johann_Sebastian)" target="_blank">Brandenburg Concertos</a></li>
+            </ul>
+            <button type="button" class="delete-button" aria-label="delete button"><i class="material-icons">delete_forever</i></button>
+          </div>`
+    );
+    demoSearches.push(
+          `<div data-searchid="1236" class="past-search-items col-xs-12">
+            <h3 class="music-title">The Moldau</h3>
+            <h3 class="creation-time">Thu November 1 12:30</h3>
+            <ul class="past-search-links">
+            <li><a href="https://imslp.org/wiki/Vltava,_JB_1:112/2_(Smetana,_Bed%C5%99ich)#Sheet_Music" target="_blank">The Moldau</a></li>
+            <li><a href="https://imslp.org/wiki/List_of_works_by_Bed%C5%99ich_Smetana" target="_blank">List of Works by Smetana</a></li>
+            </ul>
+            <button type="button" class="delete-button" aria-label="delete button"><i class="material-icons">delete_forever</i></button>
+          </div>`
+    );
+    $('.past-search-region').prop('hidden', false);
+    $('.past-searches').html(demoSearches);
+}
+
 function deleteSearchResultFromDOM(search) {
   $(search).closest('div').remove();
+}
+
+function deleteDemoSearchResultFromDOM(search) {
+    $(search).closest('div').remove();
 }
 
 function deleteSearchResultFromDB(searchID) {
@@ -470,6 +533,7 @@ function deleteSearchResultFromDB(searchID) {
 // on page load check if the user has an authentication token and listen for DOM events
 $(function() {
     if (localStorage.getItem('authToken')) {
+        $('.demo').css('display', 'none');
         let authenticationToken = localStorage.getItem('authToken');
         // function to parse the JWT
         const parseJwt = (authToken) => {
@@ -548,6 +612,14 @@ $(function() {
             $('#modal').prop('hidden', false);
             $('body').css('background', 'rgba(0, 0, 0, .7)');
         }
+    });
+    $('.demo').click(function() {
+        console.log('hi');
+        $('.login').css('display', 'none');
+        $('.signup').css('display', 'none');
+        $('.demo').css('display', 'none');
+        $('.authentication-region').prop('hidden', false);
+        $('.authentication-text').text('You are logged in as monsieur demo');
     });
     // event listener to close out modal
     $(document).click(function(e) {
@@ -656,32 +728,64 @@ $(function() {
     });
     // event listener link to save a search result 
     $('.save-button').click(function() {
-        savePastSearchToDB(STATE.googleData, STATE.musicTitle);
-        $('.past-search-region').prop('hidden', true);
-        $('.save-button').prop('hidden', true);
+        if (localStorage.getItem('authToken')) {
+            savePastSearchToDB(STATE.googleData, STATE.musicTitle);
+            $('.past-search-region').prop('hidden', true);
+            $('.save-button').prop('hidden', true);
+        }
+        else {
+            savePastDemoSearch(STATE.googleData, STATE.musicTitle);
+            $('.past-search-region').prop('hidden', true);
+            $('.save-button').prop('hidden', true);
+        }
     });
     // event listener to access past searches
     $('.mysearches-link').click(function() {
-        accessSearches();
-        $('.api-results').prop('hidden', true);
-        $('.past-search-region').prop('hidden', false);
+        if (localStorage.getItem('authToken')) {
+            accessSearches();
+            $('.api-results').prop('hidden', true);
+            $('.past-search-region').prop('hidden', false);
+        }
+        else {
+            // $('.past-searches').empty();
+            console.log('ho')
+            showDemoSearches();
+        }
+        
     });
     // event listener to delete a past search 
     $('body').on('click', '.delete-button', function() {
         let confirmDelete = confirm('Are you sure you want to delete this?');
-        if (confirmDelete === true) { 
-            deleteSearchResultFromDOM(this);
-            let pastSearchID = $(this).closest('div').data('searchid');
-            deleteSearchResultFromDB(pastSearchID);
+        if (localStorage.getItem('authToken')) {
+            if (confirmDelete === true) { 
+                deleteSearchResultFromDOM(this);
+                let pastSearchID = $(this).closest('div').data('searchid');
+                deleteSearchResultFromDB(pastSearchID);
+            }
+        }
+        else {
+            if (confirmDelete === true) {
+                deleteDemoSearchResultFromDOM(this);
+            }
         }
     });
     // event listener for loggin out the user
     $('body').on('click', '.logout-link', function() {
-        localStorage.removeItem('authToken');
-        $('.past-search-region').prop('hidden', true);
-        $('.auth-links-region').prop('hidden', false);
-        $('.authentication-region').prop('hidden', true);
-        $('.past-searches').empty();
+        if (localStorage.getItem('authToken')) {
+            localStorage.removeItem('authToken');
+            $('.past-search-region').prop('hidden', true);
+            $('.auth-links-region').prop('hidden', false);
+            $('.authentication-region').prop('hidden', true);
+            $('.past-searches').empty();
+        }
+        // for exiting the demo account
+        else {
+            $('.login').css('display', 'inline-block');
+            $('.signup').css('display', 'inline-block');
+            $('.demo').css('display', 'inline-block');
+            $('.authentication-region').prop('hidden', true);
+            $('.past-searches').empty();
+        }
     });
     $(document).keydown(function(e) { 
     if (e.keyCode == 27) { 

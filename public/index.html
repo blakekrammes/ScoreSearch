@@ -17,7 +17,7 @@
       </header>
       <section class="recorder col-xs-12" role="region">
           <button class="record_btn" id="button" aria-label="record button"></button>
-          <div id="msg_box" aria-live="assertive"><p>hiii</p></div>
+          <div id="msg_box" aria-live="assertive"></div>
           <a href="#" aria-label="instructions" class="usage-details">?</a>
           <div class="instructions" aria-live="polite" hidden>
             <p class="instruction-paragraph">For best results, record for at least 20 seconds.</p>
@@ -28,6 +28,7 @@
           <section class="auth-links-region" role="region" aria-live="assertive">
             <a href="#" class="ui-link signup">Signup</a>
             <a href="#" class="ui-link login">Login</a>
+            <a href="#" class="ui-link demo">Demo</a>
           </section>
             <section class="authentication-region" role="region" aria-live="polite" hidden>
               <p class="authentication-text" ></p>
@@ -37,6 +38,8 @@
       </section>
       <section class="past-search-region col-xs-12" role="region" aria-live="assertive" hidden>
         <section class="past-searches row" role="region">
+        </section>
+        <section class="demo-past-searches row" role="region">
         </section>
       </section>
       <section class="api-results" role="region" aria-live="assertive" hidden>
@@ -50,7 +53,7 @@
     </section>
     <section id="modal" class="col-xs-12" role="region" aria-live="assertive" hidden></section>
     <script src="web_audio_recorder_js/WebAudioRecorder.js"></script>
-    <script src="bundle.js"></script>
-    <!-- <script src="windex.js"></script> -->
+    <!-- <script src="bundle.js"></script> -->
+    <script src="windex.js"></script>
   </body>
 </html>
