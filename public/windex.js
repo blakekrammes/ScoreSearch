@@ -1,6 +1,8 @@
 // global variable for storing local variables 
 const STATE = {};
 
+window.MediaRecorder = require('audio-recorder-polyfill')
+
 let msg_box = document.getElementById('msg_box');
 let button = document.getElementById('button');
 let canvas = document.getElementById('canvas');
@@ -45,6 +47,7 @@ if (navigator.mediaDevices.getUserMedia) {
         $('.usage-details').prop('hidden', true);
         $('.instructions').prop('hidden', true);
         $('.sheet-music-message').remove();
+
         let AudioContext = window.AudioContext || window.webkitAudioContext || false; 
 
         navigator.mediaDevices.getUserMedia({ 'audio': true })
@@ -57,7 +60,50 @@ if (navigator.mediaDevices.getUserMedia) {
 
             time = Math.ceil( new Date().getTime() / 1000 );
 
+            if (AudioContext === webkitAudioContext) {
+
+                let recorder;
+                console.log(recorder)
+                document.getElementById('start').addEventListener('click', () => {
+                  // Request permissions to record audio
+                  navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+                    let thingy = new MediaRecorder(stream)
+                    console.log(thingy)
+                    recorder = new MediaRecorder(stream)
+
+                    // Set record to <audio> when recording will be finished
+                    recorder.addEventListener('dataavailable', e => {
+                      audio.src = URL.createObjectURL(e.data)
+                      // console.log('hiya')
+                    })
+
+                    // Start recording
+                    recorder.start()
+                  })
+                })
+
+                document.getElementById('stop').addEventListener('click', () => {
+                  // Stop recording
+                  recorder.stop()
+                  // Remove “recording” icon from browser tab
+                  recorder.stream.getTracks().forEach(i => i.stop())
+                })
+            }
+
+
+            // if (AudioContext === webkitAudioContext) {
+            //     let audioCtx = new AudioContext;
+            //     gumStream = stream;
+            //     let source = audioCtx.createMediaStreamSource(stream);
+            //     recorder = new WebAudioRecorder(source, {
+            //         workerDir: 'web_audio_recorder_js/',
+            //         // must use mp3 to work with Safari, but chrome/firefox accept ogg
+            //         encoding: 'mp3'
+            //     });
+            // }
+
             if (AudioContext) {
+                console.log(AudioContext)
                 let audioCtx = new AudioContext;
                 gumStream = stream;
                 let source = audioCtx.createMediaStreamSource(stream);
@@ -137,8 +183,8 @@ function stopRecording() {
   button.classList.remove('recording');
   btn_status = 'inactive';
 
-  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a><br>
-                            <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
+  $('#msg_box').html(`<p class="par-pos"><a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a></p>
+                            <p class="par-pos"><a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a></p>`);
 
   var now = Math.ceil( new Date().getTime() / 1000 );
   var t = parseTime( now - time );
@@ -149,22 +195,22 @@ function stopRecording() {
 
   recorder.finishRecording();
 
-  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a><br>
-                            <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
+  $('#msg_box').html(`<p class="par-pos"><a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a></p>
+                            <p class="par-pos"><a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a></p>`);
   console.log('recording stopped');
 }
 
 function play() {
     audio.play();
-    $('#msg_box').html(`<a href="#" onclick="pause(); return false;" class="ui-link txt_btn">${messages.stop}</a><br>
-                        <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
+    $('#msg_box').html(`<p class="par-pos"><a href="#" onclick="pause(); return false;" class="ui-link txt_btn">${messages.stop}</a></p>
+                        <p class="par-pos"><a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a></p>`);
 }
 
 function pause() {
     audio.pause();
     audio.currentTime = 0;
-    $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play}</a><br>
-                        <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
+    $('#msg_box').html(`<p class="par-pos"><a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play}</a></p>
+                        <p class="par-pos"><a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a></p>`);
 }
 
 function POSTreq (blobData) {

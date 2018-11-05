@@ -146,7 +146,8 @@ html {
 header {
     color: rgb(255, 255, 255);
     background: rgb(0, 0, 0);
-    padding: .3rem 1rem;
+    /*padding: .3rem 1rem;*/
+    padding: 3.5vw;
 }
 
 .recorder {
@@ -201,6 +202,10 @@ input[type=submit] {
 
 .page-title {
     font-size: 2rem;
+}
+
+.site-description {
+    padding-bottom: 1.5vw;
 }
 
 .music-title, .creation-time {
@@ -272,13 +277,29 @@ input[type=submit] {
 }
 
 #msg_box {
-    margin-bottom: .5rem;
+    margin-bottom: 5vw;
+    line-height: 6.5vw;
 }
 
 .instructions {
-    line-height: 1.5rem;
+    /*line-height: 1.5rem;*/
+    border-top: 1px solid rgba(0, 0, 0, .5);
     border-bottom: 1px solid rgba(0, 0, 0, .5);
-    padding-bottom: .3rem;
+    width: 100vw;
+    margin: 0 auto; 
+    margin-top: 1vw;
+    margin-bottom: 1vw;
+    padding-bottom: 1.2vw;
+    padding-top: 1.2vw;
+
+}
+
+.instruction-paragraph {
+    font-size: 3.8vw;
+    line-height: 5.5vw;
+    padding-top: .3vw;
+    padding-right: 3vw;
+    padding-left: 3vw;
 }
 
 .form-positioner {
@@ -304,14 +325,32 @@ input[type=submit] {
     color: rgba(0, 0, 0, .5);
 }
 
+/*.audD-result-div {
+    width: 60vw;
+    margin: 0 auto;
+}*/
+
 .audD-result-title {
+    margin-top: -1rem;
+    text-align: center;
     font-weight: 400;
     border-bottom: .1rem solid rgba(0, 0, 0, .1);
-    padding-bottom: .5rem;
+    /*padding-bottom: .5rem;*/
+    font-size: 3.8vw;
+    line-height: 5.5vw;
+    padding-top: .3vw;
+    padding-right: 3vw;
+    padding-left: 3vw;
+    padding-bottom: 1.2vw;
 }
 
 .api-results {
+    /*margin-top: -2rem;*/
+    width: 100vw;
+    margin: 0 auto;
     padding: 0 1rem;
+    padding-bottom: 1.5vw;
+    padding-top: 1.5vw;
 }
 
 .google-api-result-li {
@@ -331,6 +370,25 @@ input[type=submit] {
 .usage-details {
     font-size: 3rem;
 }
+
+@media only screen and (min-width: 500px) {
+    #msg_box {
+        margin-bottom: 2.5vw;
+        line-height: 5vw;
+    }
+    .instructions {
+        width: 90vw;
+    }
+    .instruction-paragraph {
+        font-size: 3vw;
+        line-height: 4.5vw;
+        padding-top: .2vw;
+        padding-right: 2vw;
+        padding-left: 2vw;
+    }
+}
+
+
 /*large phone/tablet breakpoint*/
 @media only screen and (min-width: 600px) {
     a, input, label, h2, h3, p {
@@ -341,6 +399,9 @@ input[type=submit] {
     }
     input {
         padding: .3rem;
+    }
+    header {
+        padding: 2.8vw;
     }
     .page-title {
         font-size: 3.5rem;
@@ -394,11 +455,75 @@ input[type=submit] {
         font-size: 5rem;
     }
     .instructions {
-        font-size: 1.8rem;
-        padding: 0 .3rem;
-        padding-bottom: .3rem;
-        margin-top: 1rem;
-        line-height: 2.3rem;
+        width: 100vw;
+    }
+    .instruction-paragraph {
+        font-size: 2.7vw;
+        line-height: 3.2vw;
+        padding-top: 0vw;
+        padding-bottom: 0vw;
+        padding-right: 3vw;
+        padding-left: 3vw;
+        /*padding-right: 3vw;*/
+        /*padding-left: 3vw;*/
+    }
+    .api-results {
+        width: 100vw;
+    }
+    .audD-result-title {
+        font-size: 2.7vw;
+        line-height: 3.2vw;
+        padding-top: 0vw;
+        padding-bottom: 0vw;
+        padding-right: 3vw;
+        padding-left: 3vw;
+    }
+}
+
+/*@media only screen and (min-width: 750px) {
+    .instructions {
+        width: 90vw;
+    }
+    .instruction-paragraph {
+        font-size: 2.5vw;
+        line-height: 2.5vw;
+    }
+}*/
+
+@media only screen and (min-width: 750px) {
+    .instructions {
+        width: 95vw;
+    }
+    .instruction-paragraph {
+        font-size: 2.5vw;
+        line-height: 3vw;
+    }
+    .api-results {
+        width: 95vw;
+    }
+    .audD-result-title {
+        font-size: 2.5vw;
+        line-height: 3vw;
+    }
+}
+
+@media only screen and (min-width: 800px) {
+    .instructions {
+        padding-top: 1.2vw;
+        padding-bottom: 1.2vw;
+        width: 90vw;
+    }
+    .instruction-paragraph {
+        font-size: 2.2vw;
+        line-height: 2.7vw;
+    }
+    .api-results {
+        width: 90vw;
+    }
+    .audD-result-title {
+        font-size: 2.2vw;
+        line-height: 2.7vw;
+        padding-bottom: 1.2vw;
     }
 }
 
@@ -422,12 +547,25 @@ input[type=submit] {
         margin-bottom: 6.5rem;
     }
     #msg_box {
-        margin-bottom: 2.6rem;
+        margin-bottom: 1rem;
+        line-height: 4vw;  
     } 
+    .instructions {
+        width: 80vw;
+    }
+    .api-results {
+        width: 80vw;
+    }
 }
 
 /*any larger devices*/
 @media only screen and (min-width: 1200px) {
+    header {
+        padding: 2vw;
+    }
+    .site-description {
+        padding-bottom.5vw;
+    }
     .record_btn {
         width: 20vw;
         height: 20vw;
@@ -438,10 +576,29 @@ input[type=submit] {
         height: 60vh;
         margin: -30vh 0 0 -35vw;
     }
+    #msg_box {
+        line-height: 2vw;
+        padding: .6vw;
+    }    
     .form-positioner {
         width: 70vw;
         height: 60vh;
         margin: -30vh 0 0 -35vw;
+    }
+    .instructions {
+        width: 75vw;
+    }
+    .instruction-paragraph {
+        font-size: 1.8vw;
+        line-height: 2.4vw;
+    }
+    .api-results {
+        /*margin-top: -2rem;*/
+        width: 75vw;
+    }
+    .audD-result-title {
+        font-size: 1.8vw;
+        line-height: 2.4vw;
     }
 }
 
