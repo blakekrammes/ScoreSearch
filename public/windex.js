@@ -234,6 +234,7 @@ function POSTreq (blobData) {
 }
 
 function parseRetrievedData(parseData) {
+    console.log(parseData);
   if (parseData === null || parseData.result === null || parseData.result === undefined) {
     $('.fetching-message').remove();
     $('.api-results').prop('hidden', false);
