@@ -36,6 +36,7 @@ if (navigator.mediaDevices.getUserMedia) {
         $('#msg_box').text(messages.not_supported_in_safari_or_edge);
         $('.auth-links-region').css('display', 'none'); 
         $('.record_btn').css('display', 'none');
+        $('.usage-details').css('display', 'none');
     }
 
     function beginRecording() {
@@ -46,6 +47,10 @@ if (navigator.mediaDevices.getUserMedia) {
         $('.auth-links-region').prop('hidden', true);
         $('.usage-details').prop('hidden', true);
         $('.instructions').prop('hidden', true);
+        $('.audD-result-title').prop('hidden', true);
+        $('.audD-error-message').prop('hidden', true);
+        $('.sheet-music-message').prop('hidden', true);
+        $('.save-button').prop('hidden', true);
         $('.sheet-music-message').remove();
 
         let AudioContext = window.AudioContext || window.webkitAudioContext || false; 
@@ -59,49 +64,7 @@ if (navigator.mediaDevices.getUserMedia) {
             $('#msg_box').text(messages.recording);
 
             time = Math.ceil( new Date().getTime() / 1000 );
-
-            if (AudioContext === window.webkitAudioContext) {
-
-                let recorder;
-                console.log(recorder)
-                document.getElementById('start').addEventListener('click', () => {
-                  // Request permissions to record audio
-                  navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-                    let thingy = new MediaRecorder(stream)
-                    console.log(thingy)
-                    recorder = new MediaRecorder(stream)
-
-                    // Set record to <audio> when recording will be finished
-                    recorder.addEventListener('dataavailable', e => {
-                      audio.src = URL.createObjectURL(e.data)
-                      // console.log('hiya')
-                    })
-
-                    // Start recording
-                    recorder.start()
-                  })
-                })
-
-                document.getElementById('stop').addEventListener('click', () => {
-                  // Stop recording
-                  recorder.stop()
-                  // Remove “recording” icon from browser tab
-                  recorder.stream.getTracks().forEach(i => i.stop())
-                })
-            }
-
-
-            // if (AudioContext === webkitAudioContext) {
-            //     let audioCtx = new AudioContext;
-            //     gumStream = stream;
-            //     let source = audioCtx.createMediaStreamSource(stream);
-            //     recorder = new WebAudioRecorder(source, {
-            //         workerDir: 'web_audio_recorder_js/',
-            //         // must use mp3 to work with Safari, but chrome/firefox accept ogg
-            //         encoding: 'mp3'
-            //     });
-            // }
-
+        
             if (AudioContext) {
                 console.log(AudioContext)
                 let audioCtx = new AudioContext;
@@ -110,7 +73,7 @@ if (navigator.mediaDevices.getUserMedia) {
                 recorder = new WebAudioRecorder(source, {
                     workerDir: 'web_audio_recorder_js/',
                     // must use mp3 to work with Safari, but chrome/firefox accept ogg
-                    encoding: 'ogg'
+                    encoding: 'mp3'
                 });
             } 
             else {
@@ -130,6 +93,10 @@ if (navigator.mediaDevices.getUserMedia) {
                 audioSrc = window.URL.createObjectURL(blob);
                 audio.src = audioSrc;
                 POSTreq(blob);
+                // $('.api-results').prop('hidden', false);
+                // $('.audD-error-message').html('Unable to identify audio. Try recording for a longer period or at a higher volume. Also note that Score Search can only identify recordings found in the itunes store.');
+                // $('.audD-error-message').append('<p class="sheet-music-message">Unable to retrieve sheet music. Note that Score Search can only return sheet music that is in the public domain.</p>');
+
             }
 
             recorder.onError = function(recorder, err) {
@@ -171,10 +138,18 @@ if (navigator.mediaDevices.getUserMedia) {
 
 
 function stopRecording() {
-  console.log('stopping the recording');
+
+  let authText = $('.authentication-text').text();
+
+  let loggedInText = 'You are logged in as monsieur demo';
+  
   let recordingTime = recorder.recordingTime();
   $('.auth-links-region').prop('hidden', false);
   if (localStorage.getItem('authToken')) {
+    $('.authentication-region').prop('hidden', false);
+    $('.auth-links-region').prop('hidden', true);
+  }
+  else if (authText === loggedInText) {
     $('.authentication-region').prop('hidden', false);
     $('.auth-links-region').prop('hidden', true);
   }
@@ -238,11 +213,13 @@ function parseRetrievedData(parseData) {
   if (parseData === null || parseData.result === null || parseData.result === undefined) {
     $('.fetching-message').remove();
     $('.api-results').prop('hidden', false);
-    $('.audD-result-title').html('Unable to identify audio. Try recording for a longer period or at a higher volume. Also note that Score Search can only identify recordings found in the iTunes store.');
+    $('.audD-error-message').prop('hidden', false);
+    $('.audD-error-message').html('Unable to identify audio. Try recording for a longer period or at a higher volume. Also note that Score Search can only identify recordings found in the itunes store.');
     $('.imslp-search-results').html('');
     return; 
   }
   $('.api-results').prop('hidden', false);
+  $('.audD-result-title').prop('hidden', false);
   $('.audD-result-title').html(parseData.result.title);
   getGoogleAPIData(parseData);
 }
@@ -257,15 +234,15 @@ function save() {
 }
 
 } 
-else {
-    if (location.protocol !== 'https:') {
-        msg_box.innerHTML = messages.mic_error + '<br>'  + messages.use_https;
-    } 
-    else {
-        msg_box.innerHTML = messages.mic_error; 
-    }
-    button.disabled = true;
-}
+// else {
+//     if (location.protocol !== 'https:') {
+//         msg_box.innerHTML = messages.mic_error + '<br>'  + messages.use_https;
+//     } 
+//     else {
+//         msg_box.innerHTML = messages.mic_error; 
+//     }
+//     button.disabled = true;
+// }
 
 
 //a function to create the result <li>
@@ -296,24 +273,30 @@ function getGoogleAPIData(audDData) {
 }
 
 function renderGoogleAPIData(googleData, music_title) {
-    if (googleData.items === undefined) {
-        $('.fetching-message').remove();
-        $('.audD-result-title').append('<p class="sheet-music-message">Unable to retrieve sheet music. Note that Score Search can only return sheet music that is in the public domain.</p>');
-    }
+    let authText = $('.authentication-text').text();
+    let loggedInText = 'You are logged in as monsieur demo';
+
     $('.fetching-message').remove();
-    const googleAPIResults = googleData.items.map((item, index) => createGoogleLI(item));
-    $('.api-results').prop('hidden', false);
-    $('.imslp-search-results').html(googleAPIResults);
-    $('.past-search-region').prop('hidden', true);
-    if (localStorage.getItem('authToken')) {
-        $('.save-button').prop('hidden', false);
-        STATE.googleData = googleData;
-        STATE.musicTitle = music_title;
+
+    if (googleData.items === undefined || googleData.items === null) {
+        $('<p class="sheet-music-message">Unable to retrieve sheet music. Note that Score Search can only return sheet music that is in the public domain.</p>').insertAfter('.audD-result-title');
     }
-    else if ($('.authentication-text:contains("you are logged in as monsieur demo")')) {
-        $('.save-button').prop('hidden', false);
-        STATE.googleData = googleData;
-        STATE.musicTitle = music_title;
+
+    else {
+        const googleAPIResults = googleData.items.map((item, index) => createGoogleLI(item));
+        $('.api-results').prop('hidden', false);
+        $('.imslp-search-results').html(googleAPIResults);
+        $('.past-search-region').prop('hidden', true);
+        if (localStorage.getItem('authToken')) {
+            $('.save-button').prop('hidden', false);
+            STATE.googleData = googleData;
+            STATE.musicTitle = music_title;
+        }
+        else if (authText === loggedInText) {
+            $('.save-button').prop('hidden', false);
+            STATE.googleData = googleData;
+            STATE.musicTitle = music_title;
+        }
     }
 }
 
@@ -331,7 +314,7 @@ function savePastSearchToDB(apiResults, musicTitle) {
     let username = parseJwt(authenticationToken).user.username;
     let date = new Date();
     let dateString = date.toString();
-    let truncatedDateString = dateString.substring(0, dateString.length -36);
+    let truncatedDateString = dateString.substring(0, dateString.length - 36);
 
     const resultLinks = apiResults.items.map(function(item) {
         let searchlink = `${item.link}#Sheet_Music`;
@@ -364,9 +347,55 @@ function savePastSearchToDB(apiResults, musicTitle) {
     }
   })
 }
+// array of demo searches
+const demoSearches = [
+    `<div data-searchid="1234" class="past-search-items col-xs-12">
+        <h3 class="music-title">The Blue Danube</h3>
+        <h3 class="creation-time">Mon November 5 2018 11:25</h3>
+        <ul class="past-search-links">
+            <li><a href="https://imslp.org/wiki/An_der_sch%C3%B6nen_blauen_Donau%2C_Op.314_(Strauss_Jr.%2C_Johann)#Sheet_Music" target="_blank">The Blue Danube</a></li>
+            <li><a href="https://imslp.org/wiki/Gems_of_the_Beautiful_Blue_Danube_Waltzes_(Hayden%2C_Winslow_Lewis)#Sheet_Music" target="_blank">Gems of the Beautiful Blue Danube Waltzes</a></li>
+        </ul>
+        <button type="button" class="delete-button" aria-label="delete button"><i class="material-icons">delete_forever</i></button>
+    </div>`,
+    `<div data-searchid="1235" class="past-search-items col-xs-12">
+        <h3 class="music-title">Brandenburg Concerto 1</h3>
+        <h3 class="creation-time">Mon November 5 2018 16:40</h3>
+        <ul class="past-search-links">
+            <li><a href="https://imslp.org/wiki/Brandenburg_Concerto_No.1_in_F_major%2C_BWV_1046_(Bach%2C_Johann_Sebastian)#Sheet_Music" target="_blank">Brandenburg Concerto 1</a></li>
+            <li><a href="https://imslp.org/wiki/Brandenburg_Concertos,_BWV_1046-51_(Bach,_Johann_Sebastian)" target="_blank">Brandenburg Concertos</a></li>
+        </ul>
+        <button type="button" class="delete-button" aria-label="delete button"><i class="material-icons">delete_forever</i></button>
+    </div>`,
+    `<div data-searchid="1236" class="past-search-items col-xs-12">
+        <h3 class="music-title">The Moldau</h3>
+        <h3 class="creation-time">Thu November 1 2018 12:30</h3>
+        <ul class="past-search-links">
+        <li><a href="https://imslp.org/wiki/Vltava,_JB_1:112/2_(Smetana,_Bed%C5%99ich)#Sheet_Music" target="_blank">The Moldau</a></li>
+        <li><a href="https://imslp.org/wiki/List_of_works_by_Bed%C5%99ich_Smetana" target="_blank">List of Works by Smetana</a></li>
+        </ul>
+        <button type="button" class="delete-button" aria-label="delete button"><i class="material-icons">delete_forever</i></button>
+    </div>`
+];
 
 function savePastDemoSearch(apiResults, musicTitle) {
-
+    let date = new Date();
+    let dateString = date.toString();
+    let truncatedDateString = dateString.substring(0, dateString.length - 36);
+    demoSearches.push(
+          `<div data-searchid="1237" class="past-search-items col-xs-12">
+            <h3 class="music-title">${musicTitle}</h3>
+            <h3 class="creation-time">${truncatedDateString}</h3>
+            <ul class="past-search-links">
+                <li><a href="${apiResults.items[0].link}#Sheet_Music" target="_blank">${apiResults.items[0].title}</a></li>
+                <li><a href="${apiResults.items[1].link}#Sheet_Music" target="_blank">${apiResults.items[1].title}</a></li>
+                <li><a href="${apiResults.items[2].link}#Sheet_Music" target="_blank">${apiResults.items[2].title}</a></li>                      
+                <li><a href="${apiResults.items[3].link}#Sheet_Music" target="_blank">${apiResults.items[3].title}</a></li>
+                <li><a href="${apiResults.items[4].link}#Sheet_Music" target="_blank">${apiResults.items[4].title}</a></li>
+           </ul>
+            <button type="button" class="delete-button" aria-label="delete button"><i class="material-icons">delete_forever</i></button>
+          </div>`
+    );
 }
 
 // function to get an authToken/login the user
@@ -394,7 +423,6 @@ function loginUser(usernm, pass) {
              localStorage.setItem('authToken', res.authToken);
              // set the auth token to a variable to retrieve it
              let authToken = localStorage.getItem('authToken');
-             console.log('the current authToken is ', authToken);
              $('.authentication-region').prop('hidden', false);
              $('.authentication-text').text(`You are logged in as ${usernm}`);
         },
@@ -433,10 +461,6 @@ function accessSearches() {
     })
 }
 
-// function accessDemoSearches() {
-
-// }
-
 function displayPastSearchResults(resultData) {
     const searches = [];
     for (let i = 0; i < resultData.searches.length; i++) {
@@ -458,48 +482,7 @@ function displayPastSearchResults(resultData) {
         $('.past-searches').html(searches);
 }
 
-
-const demoSearches = [];
-
 function showDemoSearches() {
-
-    if (demoSearches.length > 0) {
-        return;
-    }
-    
-    demoSearches.push(
-          `<div data-searchid="1234" class="past-search-items col-xs-12">
-            <h3 class="music-title">The Blue Danube</h3>
-            <h3 class="creation-time">Mon November 5 11:25</h3>
-            <ul class="past-search-links">
-                <li><a href="https://imslp.org/wiki/An_der_sch%C3%B6nen_blauen_Donau%2C_Op.314_(Strauss_Jr.%2C_Johann)#Sheet_Music" target="_blank">The Blue Danube</a></li>
-                <li><a href="https://imslp.org/wiki/Gems_of_the_Beautiful_Blue_Danube_Waltzes_(Hayden%2C_Winslow_Lewis)#Sheet_Music" target="_blank">Gems of the Beautiful Blue Danube Waltzes</a></li>
-            </ul>
-            <button type="button" class="delete-button" aria-label="delete button"><i class="material-icons">delete_forever</i></button>
-          </div>`
-    );
-    demoSearches.push(
-          `<div data-searchid="1235" class="past-search-items col-xs-12">
-            <h3 class="music-title">Brandenburg Concerto 1</h3>
-            <h3 class="creation-time">Mon November 5 16:40</h3>
-            <ul class="past-search-links">
-                <li><a href="https://imslp.org/wiki/Brandenburg_Concerto_No.1_in_F_major%2C_BWV_1046_(Bach%2C_Johann_Sebastian)#Sheet_Music" target="_blank">Brandenburg Concerto 1</a></li>
-                <li><a href="https://imslp.org/wiki/Brandenburg_Concertos,_BWV_1046-51_(Bach,_Johann_Sebastian)" target="_blank">Brandenburg Concertos</a></li>
-            </ul>
-            <button type="button" class="delete-button" aria-label="delete button"><i class="material-icons">delete_forever</i></button>
-          </div>`
-    );
-    demoSearches.push(
-          `<div data-searchid="1236" class="past-search-items col-xs-12">
-            <h3 class="music-title">The Moldau</h3>
-            <h3 class="creation-time">Thu November 1 12:30</h3>
-            <ul class="past-search-links">
-            <li><a href="https://imslp.org/wiki/Vltava,_JB_1:112/2_(Smetana,_Bed%C5%99ich)#Sheet_Music" target="_blank">The Moldau</a></li>
-            <li><a href="https://imslp.org/wiki/List_of_works_by_Bed%C5%99ich_Smetana" target="_blank">List of Works by Smetana</a></li>
-            </ul>
-            <button type="button" class="delete-button" aria-label="delete button"><i class="material-icons">delete_forever</i></button>
-          </div>`
-    );
     $('.past-search-region').prop('hidden', false);
     $('.past-searches').html(demoSearches);
 }
@@ -568,6 +551,7 @@ $(function() {
     let modalPropHidden = $('#modal').prop('hidden');
     //adds html for signup in modal
     $('.signup').click(function() {
+        $('.api-results').prop('hidden', true);
         $('#modal').html(`
             <div class="form-positioner">
                 <p class="signup-error-box"></p>
@@ -593,6 +577,7 @@ $(function() {
     });
     // adds login html in modal
     $('.login').click(function() {
+        $('.api-results').prop('hidden', true);
         $('#modal').html(`
             <div class="form-positioner">
                 <p class="login-error-box"></p>
@@ -615,10 +600,10 @@ $(function() {
         }
     });
     $('.demo').click(function() {
-        console.log('hi');
         $('.login').css('display', 'none');
         $('.signup').css('display', 'none');
         $('.demo').css('display', 'none');
+        $('.api-results').prop('hidden', true);
         $('.authentication-region').prop('hidden', false);
         $('.authentication-text').text('You are logged in as monsieur demo');
     });
@@ -748,9 +733,9 @@ $(function() {
             $('.past-search-region').prop('hidden', false);
         }
         else {
-            // $('.past-searches').empty();
-            console.log('ho')
             showDemoSearches();
+            $('.api-results').prop('hidden', true);
+            $('.past-search-region').prop('hidden', false);
         }
         
     });
@@ -772,6 +757,7 @@ $(function() {
     });
     // event listener for loggin out the user
     $('body').on('click', '.logout-link', function() {
+        $('.api-results').prop('hidden', true);
         if (localStorage.getItem('authToken')) {
             localStorage.removeItem('authToken');
             $('.past-search-region').prop('hidden', true);
@@ -784,6 +770,7 @@ $(function() {
             $('.login').css('display', 'inline-block');
             $('.signup').css('display', 'inline-block');
             $('.demo').css('display', 'inline-block');
+            $('.auth-links-region').prop('hidden', false);
             $('.authentication-region').prop('hidden', true);
             $('.past-searches').empty();
         }

@@ -14,6 +14,7 @@
     border-radius: 50%;
     cursor: pointer;
     transition: .3s;
+    margin-bottom: .8rem;
 }
 
 .record_btn:hover {
@@ -325,17 +326,37 @@ input[type=submit] {
     color: rgba(0, 0, 0, .5);
 }
 
-/*.audD-result-div {
-    width: 60vw;
-    margin: 0 auto;
-}*/
-
 .audD-result-title {
     margin-top: -1rem;
+    margin-bottom: -.6rem;
+    text-align: left;
+    font-weight: 500;
+    border-bottom: .1rem solid rgba(0, 0, 0, .4);
+    /*padding-bottom: .5rem;*/
+    font-size: 1.3rem;
+    /*line-height: 5.5vw;*/
+    padding-top: .3vw;
+    padding-bottom: .1rem;
+}
+
+.audD-error-message {
+    border-top: .1rem solid rgba(0,0,0,.4);
+    margin-top: -1.5rem;
     text-align: center;
     font-weight: 400;
-    border-bottom: .1rem solid rgba(0, 0, 0, .1);
+    /*border-bottom: .1rem solid rgba(0, 0, 0, .1);*/
     /*padding-bottom: .5rem;*/
+    font-size: 3.8vw;
+    line-height: 5.5vw;
+    padding-top: .3rem;
+    padding-right: 3vw;
+    padding-left: 3vw;
+    padding-bottom: 1.2vw;
+}
+.sheet-music-message {
+    margin-top: 1rem;
+    text-align: center;
+    font-weight: 400;
     font-size: 3.8vw;
     line-height: 5.5vw;
     padding-top: .3vw;
@@ -353,9 +374,13 @@ input[type=submit] {
     padding-top: 1.5vw;
 }
 
+.appender {
+    font-size: 1.1rem;
+}
+
 .google-api-result-li {
     border-bottom: .1rem solid rgba(0, 0, 0, .1);
-    padding-bottom: .3rem;
+    padding: .6rem 0;
     margin-bottom: .3rem;
 }
 
@@ -385,6 +410,9 @@ input[type=submit] {
         padding-top: .2vw;
         padding-right: 2vw;
         padding-left: 2vw;
+    }
+    .audD-result-title {
+        /*margin-bottom: -2rem;*/
     }
 }
 
@@ -429,6 +457,7 @@ input[type=submit] {
         width: 40vw;
         height: 40vw;
         font-size: 25vw;
+        margin-bottom: .8rem;
     }
     .past-search-links {
         margin-bottom: 5.5rem;
@@ -439,9 +468,6 @@ input[type=submit] {
     .save-button {
         padding: .5rem;
         font-size: 2rem;
-    }
-    .google-api-result-li {
-        padding-bottom: .3rem;
     }
     .text_btn {
         line-height: 2rem;
@@ -470,7 +496,25 @@ input[type=submit] {
     .api-results {
         width: 100vw;
     }
+    .appender {
+        font-size: 1.3rem;
+    }
     .audD-result-title {
+        font-size: 1.9rem;
+        /*line-height: 5.2vw;*/
+        padding-top: 2vw;
+        /*padding-bottom: 2vw;*/
+    }
+    .audD-error-message {
+        /*margin-top: 2.5rem;*/
+        font-size: 2.7vw;
+        line-height: 3.2vw;
+        /*padding-top: 0vw;*/
+        padding-bottom: 0vw;
+        padding-right: 3vw;
+        padding-left: 3vw;
+    }
+    .sheet-music-message {
         font-size: 2.7vw;
         line-height: 3.2vw;
         padding-top: 0vw;
@@ -502,6 +546,14 @@ input[type=submit] {
         width: 95vw;
     }
     .audD-result-title {
+        /*font-size: 2.5vw;*/
+        /*line-height: 3vw;*/
+    }
+    .audD-error-message {
+        font-size: 2.5vw;
+        line-height: 3vw;
+    }
+    .sheet-music-message {
         font-size: 2.5vw;
         line-height: 3vw;
     }
@@ -515,12 +567,24 @@ input[type=submit] {
     }
     .instruction-paragraph {
         font-size: 2.2vw;
-        line-height: 2.7vw;
+        /*line-height: 2.7vw;*/
     }
     .api-results {
         width: 90vw;
     }
     .audD-result-title {
+        font-size: 1.8rem;
+        /*margin-bottom: -1rem;*/
+        /*line-height: 2.7vw;*/
+        /*padding-bottom: 1.2vw;*/
+    }
+    .audD-error-message {
+        /*margin-top: 1.4rem;*/
+        font-size: 2.2vw;
+        line-height: 2.7vw;
+        padding-bottom: 1.2vw;
+    }
+    .sheet-music-message {
         font-size: 2.2vw;
         line-height: 2.7vw;
         padding-bottom: 1.2vw;
@@ -553,6 +617,9 @@ input[type=submit] {
     .instructions {
         width: 80vw;
     }
+    .appender {
+        font-size: 1.4rem;
+    }
     .api-results {
         width: 80vw;
     }
@@ -570,6 +637,7 @@ input[type=submit] {
         width: 20vw;
         height: 20vw;
         font-size: 15vw;
+        margin-bottom: .5rem;
     }
     #modal {
         width: 70vw;
@@ -577,7 +645,7 @@ input[type=submit] {
         margin: -30vh 0 0 -35vw;
     }
     #msg_box {
-        line-height: 2vw;
+        line-height: 2.5vw;
         padding: .6vw;
     }    
     .form-positioner {
@@ -596,7 +664,20 @@ input[type=submit] {
         /*margin-top: -2rem;*/
         width: 75vw;
     }
+    .appender {
+        font-size: 1.7rem;
+    }
     .audD-result-title {
+        padding-top: 0vw;
+        font-size: 2rem;
+        /*line-height: 2.4vw;*/
+    }
+    .audD-error-message {
+        font-size: 1.8vw;
+        line-height: 2.4vw;
+        /*margin-top: 1.5rem;*/
+    }
+    .sheet-music-message {
         font-size: 1.8vw;
         line-height: 2.4vw;
     }
