@@ -43,6 +43,11 @@
     background: none;
 }
 
+#seconds-counter {
+    margin-top: -1rem;
+    margin-bottom: 2rem;
+}
+
 .recording {
     animation: recording 2s infinite ease-in-out;
     position: relative;
@@ -682,9 +687,3 @@ input[type=submit] {
         line-height: 2.4vw;
     }
 }
-
-
-
-
-
-

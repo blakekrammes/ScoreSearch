@@ -17,6 +17,8 @@ let messages = {
         'not_supported_in_safari_or_edge': 'Score Search is not yet supported in Safari or Edge. Please use Chrome or Firefox instead'
     },
 time;
+let seconds = 0;
+let el = document.getElementById('seconds-counter');
 
 $('#msg_box').text(messages.press_to_start);
 
@@ -29,6 +31,7 @@ let recorder;
 let gumStream;
 let btn_status = 'inactive';
 let audio = new Audio();
+let lastCount;
 
 if (navigator.mediaDevices.getUserMedia) {
 
@@ -63,10 +66,21 @@ if (navigator.mediaDevices.getUserMedia) {
 
             $('#msg_box').text(messages.recording);
 
+            if (seconds > 0) {
+                lastCount = seconds;
+                $('#seconds-counter').css('display', 'block');
+                let cancle = setInterval(incrementSeconds, 1000);
+                clearInterval(cancle);   
+            }
+            else {
+                $('#seconds-counter').css('display', 'block');
+                incrementSeconds();
+                let cancle = setInterval(incrementSeconds, 1000);
+            }
+
             time = Math.ceil( new Date().getTime() / 1000 );
         
             if (AudioContext) {
-                console.log(AudioContext)
                 let audioCtx = new AudioContext;
                 gumStream = stream;
                 let source = audioCtx.createMediaStreamSource(stream);
@@ -93,10 +107,6 @@ if (navigator.mediaDevices.getUserMedia) {
                 audioSrc = window.URL.createObjectURL(blob);
                 audio.src = audioSrc;
                 POSTreq(blob);
-                // $('.api-results').prop('hidden', false);
-                // $('.audD-error-message').html('Unable to identify audio. Try recording for a longer period or at a higher volume. Also note that Score Search can only identify recordings found in the itunes store.');
-                // $('.audD-error-message').append('<p class="sheet-music-message">Unable to retrieve sheet music. Note that Score Search can only return sheet music that is in the public domain.</p>');
-
             }
 
             recorder.onError = function(recorder, err) {
@@ -118,51 +128,45 @@ if (navigator.mediaDevices.getUserMedia) {
     }
 
     button.onclick = function () {
-        if (btn_status === 'inactive' ) {
+        if (btn_status === 'inactive') {
             beginRecording();
-        } else if ( btn_status === 'recording') {
+        } else if (btn_status === 'recording') {
             stopRecording();
         }
     }
 
-    function parseTime( sec ) {
+    function parseTime(sec) {
         var h = parseInt( sec / 3600 );
         var m = parseInt( sec / 60 );
+
         var sec = sec - ( h * 3600 + m * 60 );
 
         h = h == 0 ? '' : h + ':';
         sec = sec < 10 ? '0' + sec : sec;
 
+        sec = lastCount < 10 ? '0' + lastCount : lastCount;
+
         return h + m + ':' + sec; 
     }
-
+    
+    function incrementSeconds() {
+        if (seconds > 0 && btn_status === 'inactive') {
+            seconds = 0;
+        }
+        seconds += 1;
+        el.innerText = seconds;
+    }
 
 function stopRecording() {
-
-  let authText = $('.authentication-text').text();
-
-  let loggedInText = 'You are logged in as monsieur demo';
+  $('#seconds-counter').css('display', 'none');
+  lastCount = seconds;
+  seconds = 0;
   
   let recordingTime = recorder.recordingTime();
-  $('.auth-links-region').prop('hidden', false);
-  if (localStorage.getItem('authToken')) {
-    $('.authentication-region').prop('hidden', false);
-    $('.auth-links-region').prop('hidden', true);
-  }
-  else if (authText === loggedInText) {
-    $('.authentication-region').prop('hidden', false);
-    $('.auth-links-region').prop('hidden', true);
-  }
-  $('.usage-details').prop('hidden', false);
 
+  $('#msg_box').css('display', 'none');
   button.classList.remove('recording');
   btn_status = 'inactive';
-
-  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a><br>
-                            <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
-
-  var now = Math.ceil( new Date().getTime() / 1000 );
-  var t = parseTime( now - time );
 
   let audioTrack = gumStream.getAudioTracks()[0];
 
@@ -170,8 +174,6 @@ function stopRecording() {
 
   recorder.finishRecording();
 
-  $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a><br>
-                            <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
   console.log('recording stopped');
 }
 
@@ -205,13 +207,41 @@ function POSTreq (blobData) {
   xhr.open('POST', 'https://api.audd.io/');
   xhr.responseType = 'json';
   xhr.send(fd);
-  $('.recorder').append('<p class="fetching-message" aria-live="assertive">Fetching search results</p>');
+  $('body').css('overflow', 'hidden');
+  $('.recorder').append('<div class="loader">Loading...</div>');
 }
 
 function parseRetrievedData(parseData) {
-    console.log(parseData);
+
+    // console.log(parseData);
+
+    let authText = $('.authentication-text').text();
+
+    let loggedInText = 'You are logged in as monsieur demo';
+
+    $('.loader').remove();
+    $('body').css('overflow', 'visible');
+    $('#msg_box').css('display', 'block');
+
+    $('.auth-links-region').prop('hidden', false);
+      if (localStorage.getItem('authToken')) {
+        $('.authentication-region').prop('hidden', false);
+        $('.auth-links-region').prop('hidden', true);
+      }
+      else if (authText === loggedInText) {
+        $('.authentication-region').prop('hidden', false);
+        $('.auth-links-region').prop('hidden', true);
+      }
+
+      $('.usage-details').prop('hidden', false);
+
+      var now = Math.ceil( new Date().getTime() / 1000 );
+      var t = parseTime( now - time );
+
+      $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a><br>
+                            <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
+
   if (parseData === null || parseData.result === null || parseData.result === undefined) {
-    $('.fetching-message').remove();
     $('.api-results').prop('hidden', false);
     $('.audD-error-message').prop('hidden', false);
     $('.audD-error-message').html('Unable to identify audio. Try recording for a longer period or at a higher volume. Also note that Score Search can only identify recordings found in the itunes store.');
@@ -276,10 +306,9 @@ function renderGoogleAPIData(googleData, music_title) {
     let authText = $('.authentication-text').text();
     let loggedInText = 'You are logged in as monsieur demo';
 
-    $('.fetching-message').remove();
-
     if (googleData.items === undefined || googleData.items === null) {
         $('<p class="sheet-music-message">Unable to retrieve sheet music. Note that Score Search can only return sheet music that is in the public domain.</p>').insertAfter('.audD-result-title');
+        $('.imslp-search-results').html('');
     }
 
     else {

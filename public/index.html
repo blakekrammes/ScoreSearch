@@ -6,6 +6,7 @@
     <meta name="description" content="Identify Classical Music by Recording Your Device's Input and Find the Sheet Music on IMSLP.">
     <title>Score Search</title>
     <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <link href="loader.css" rel="stylesheet" type="text/css" />
     <link href="index.css" rel="stylesheet" type="text/css" />
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   </head>
@@ -18,9 +19,11 @@
       <section class="recorder col-xs-12" role="region">
           <button class="record_btn" id="button" aria-label="record button"></button>
           <div id="msg_box" aria-live="assertive"></div>
+          <div id="seconds-counter"></div>
           <a href="#" aria-label="instructions" class="usage-details">?</a>
           <div class="instructions" aria-live="polite" hidden>
-            <p class="instruction-paragraph">For best results, record for at least 20 seconds.</p>
+            <p class="instruction-paragraph">For best results, record between 5 and 25 seconds.</p>
+            <p class="instruction-paragraph">For quiet pieces, you may need to record longer.</p>
             <p class="instruction-paragraph">The recorded audio must be in the itunes store.</p>
             <p class="instruction-paragraph">The piece must be in the public domain to retrieve sheet music.</p> 
             <p class="instruction-paragraph"><a href="https://www.youtube.com/watch?v=oS_XjkILFMY" target="_blank">Here</a> is a link to a recording that Score Search identifies successfully.</p>
@@ -35,6 +38,7 @@
               <a href="#" class="ui-link mysearches-link">My Searches</a>
               <a href="#" class="ui-link logout-link">Logout</a>
             </section>
+          <!-- <div class="loader">Loading...</div>   -->
       </section>
       <section class="past-search-region col-xs-12" role="region" aria-live="assertive" hidden>
         <section class="past-searches row" role="region">
