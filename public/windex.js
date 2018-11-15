@@ -645,7 +645,7 @@ $(function() {
                 modalPropHidden = false;
             }, 300);
             if (typeof modalPropHidden !== typeof undefined && modalPropHidden !== true) {
-                $('body').css('background', 'rgb(255, 255, 255)');
+                $('body').css('background', '#DEDEDE');
                 $('#modal').prop('hidden', true);
             }      
         }  
@@ -676,7 +676,7 @@ $(function() {
             success: function(res, status, xhr) {
                 let userID = res.id;
                 loginUser(username, password, userID);
-                $('body').css('background', 'rgb(255, 255, 255)');
+                $('body').css('background', '#DEDEDE');
                 $('#modal').prop('hidden', true);
                 $('.auth-links-region').prop('hidden', true);
                 $('#signup-email').val('');
@@ -725,7 +725,7 @@ $(function() {
                     success: function(res, status, xhr) {
                         loginUser(username, password);
                         $('.auth-links-region').prop('hidden', true);
-                        $('body').css('background', 'rgb(255, 255, 255)');
+                        $('body').css('background', '#DEDEDE');
                         $('#modal').prop('hidden', true);
                     },
                     error: function(err) {
@@ -807,7 +807,7 @@ $(function() {
     $(document).keydown(function(e) { 
     if (e.keyCode == 27) { 
         $('#modal').prop('hidden', true);
-        $('body').css('background', 'rgb(255, 255, 255)');
+        $('body').css('background', '#DEDEDE');
     } 
 });
 });
