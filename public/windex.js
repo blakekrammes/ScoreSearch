@@ -32,6 +32,7 @@ let gumStream;
 let btn_status = 'inactive';
 let audio = new Audio();
 let lastCount;
+// let authLinks = document.getElementById('auth-links-region');
 
 if (navigator.mediaDevices.getUserMedia) {
 
@@ -43,7 +44,6 @@ if (navigator.mediaDevices.getUserMedia) {
     }
 
     function beginRecording() {
-        console.log('beginning the recording');
         $('.past-search-region').prop('hidden', true);
         $('.api-results').prop('hidden', true);
         $('.authentication-region').prop('hidden', true);
@@ -173,8 +173,6 @@ function stopRecording() {
   audioTrack.stop();
 
   recorder.finishRecording();
-
-  console.log('recording stopped');
 }
 
 function play() {
@@ -212,8 +210,6 @@ function POSTreq (blobData) {
 }
 
 function parseRetrievedData(parseData) {
-
-    // console.log(parseData);
 
     let authText = $('.authentication-text').text();
 
@@ -581,15 +577,16 @@ $(function() {
     //adds html for signup in modal
     $('.signup').click(function() {
         $('.api-results').prop('hidden', true);
+        $('.auth-links-region').prop('hidden', true);
         $('#modal').html(`
             <div class="form-positioner">
                 <p class="signup-error-box"></p>
                 <form class="signup-form" role="form">
-                    <label for="signup-username">Username</label>
+                    <label for="signup-username">Username</label><br>
                     <input type="text" name="username" id="signup-username" required><br>
-                    <label for="signup-email">Email</label>
+                    <label for="signup-email">Email</label><br>
                     <input type="email" name="email" id="signup-email" required><br>
-                    <label for="signup-password">Password</label>
+                    <label for="signup-password">Password</label><br>
                     <input type="password" name="password" id="signup-password" required><br>
                     <input type="submit" value="Signup">
                 </form>
@@ -607,13 +604,14 @@ $(function() {
     // adds login html in modal
     $('.login').click(function() {
         $('.api-results').prop('hidden', true);
+        $('.auth-links-region').prop('hidden', true);
         $('#modal').html(`
             <div class="form-positioner">
                 <p class="login-error-box"></p>
                 <form class="login-form" role="form">
-                    <label for="login-username">Username</label>
+                    <label for="login-username">Username</label><br>
                     <input type="text" name="username" id="login-username" required><br>
-                    <label for="login-password">Password</label>
+                    <label for="login-password">Password</label><br>
                     <input type="password" name="password" id="login-password" required><br>
                     <input type="submit" value="Login">
                 </form>
@@ -633,6 +631,7 @@ $(function() {
         $('.signup').css('display', 'none');
         $('.demo').css('display', 'none');
         $('.api-results').prop('hidden', true);
+        $('.auth-links-region').prop('hidden', true);
         $('.authentication-region').prop('hidden', false);
         $('.authentication-text').text('You are logged in as monsieur demo');
     });
@@ -647,6 +646,9 @@ $(function() {
             if (typeof modalPropHidden !== typeof undefined && modalPropHidden !== true) {
                 $('body').css('background', '#DEDEDE');
                 $('#modal').prop('hidden', true);
+                if (btn_status === 'recording') {
+                    $('.auth-links-region').prop('hidden', true);
+                }
             }      
         }  
     });
@@ -807,6 +809,7 @@ $(function() {
     $(document).keydown(function(e) { 
     if (e.keyCode == 27) { 
         $('#modal').prop('hidden', true);
+        $('.auth-links-region').prop('hidden', false);
         $('body').css('background', '#DEDEDE');
     } 
 });
