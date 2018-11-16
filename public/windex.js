@@ -576,8 +576,11 @@ $(function() {
     let modalPropHidden = $('#modal').prop('hidden');
     //adds html for signup in modal
     $('.signup').click(function() {
+        $('.record_btn').prop('hidden', true);
+        $('#msg_box').prop('hidden', true);
         $('.api-results').prop('hidden', true);
         $('.auth-links-region').prop('hidden', true);
+        $('.usage-details').prop('hidden', true);
         $('#modal').html(`
             <div class="form-positioner">
                 <p class="signup-error-box"></p>
@@ -603,8 +606,11 @@ $(function() {
     });
     // adds login html in modal
     $('.login').click(function() {
+        $('.record_btn').prop('hidden', true);
+        $('#msg_box').prop('hidden', true);
         $('.api-results').prop('hidden', true);
         $('.auth-links-region').prop('hidden', true);
+        $('.usage-details').prop('hidden', true);
         $('#modal').html(`
             <div class="form-positioner">
                 <p class="login-error-box"></p>
@@ -645,10 +651,18 @@ $(function() {
             }, 300);
             if (typeof modalPropHidden !== typeof undefined && modalPropHidden !== true) {
                 $('body').css('background', '#DEDEDE');
-                $('#modal').prop('hidden', true);
-                if (btn_status === 'recording') {
+                if ($(e.target).is('#button') && btn_status === 'inactive') {
                     $('.auth-links-region').prop('hidden', true);
                 }
+                if ($('#modal').prop('hidden') === false && btn_status === 'inactive') {
+                    $('.usage-details').prop('hidden', false);
+                }
+                if ($('.authentication-region').prop('hidden') === true && $('#modal').prop('hidden') === false)  {
+                    $('.auth-links-region').prop('hidden', false);
+                }
+                $('#modal').prop('hidden', true);
+                $('.record_btn').prop('hidden', false);
+                $('#msg_box').prop('hidden', false);
             }      
         }  
     });
@@ -678,9 +692,12 @@ $(function() {
             success: function(res, status, xhr) {
                 let userID = res.id;
                 loginUser(username, password, userID);
+                $('#msg_box').prop('hidden', false);
+                $('.record_btn').prop('hidden', false);
                 $('body').css('background', '#DEDEDE');
                 $('#modal').prop('hidden', true);
                 $('.auth-links-region').prop('hidden', true);
+                $('.usage-details').prop('hidden', false);
                 $('#signup-email').val('');
                 $('#signup-password').val('');
                 $('#signup-username').val('');
@@ -726,7 +743,10 @@ $(function() {
                     contentType: 'application/json',
                     success: function(res, status, xhr) {
                         loginUser(username, password);
+                        $('#msg_box').prop('hidden', false);
+                        $('.record_btn').prop('hidden', false);
                         $('.auth-links-region').prop('hidden', true);
+                        $('.usage-details').prop('hidden', false);
                         $('body').css('background', '#DEDEDE');
                         $('#modal').prop('hidden', true);
                     },
@@ -794,6 +814,7 @@ $(function() {
             $('.past-search-region').prop('hidden', true);
             $('.auth-links-region').prop('hidden', false);
             $('.authentication-region').prop('hidden', true);
+            $('.demo').css('display', 'inline-block');
             $('.past-searches').empty();
         }
         // for exiting the demo account
@@ -810,6 +831,9 @@ $(function() {
     if (e.keyCode == 27) { 
         $('#modal').prop('hidden', true);
         $('.auth-links-region').prop('hidden', false);
+        $('#msg_box').prop('hidden', false);
+        $('.record_btn').prop('hidden', false);
+        $('.usage-details').prop('hidden', false);
         $('body').css('background', '#DEDEDE');
     } 
 });
