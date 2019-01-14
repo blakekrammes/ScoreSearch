@@ -8,8 +8,7 @@ router.use(express.static('public/searches'));
 
 mongoose.Promise = global.Promise;
 
-const { PORT } = require('./config');
-const { Users, PastSearches } = require('./model');
+const { Users } = require('./model');
 
 router.get('/', (req, res) => {
 	console.log('Retrieving Users');

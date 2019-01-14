@@ -14,7 +14,7 @@ let messages = {
         'stop': 'Stop',
         'download': 'Download recording', 
         'use_https': 'This application will not work over an insecure connection. Use HTTPS.',
-        'not_supported_in_safari_or_edge': 'Score Search is not yet supported in Safari or Edge. Please use Chrome or Firefox instead'
+        'not_supported_in_safari_or_edge': 'Score Search is not yet supported in Safari or Edge. Please use Chrome or Firefox instead.'
     },
 time;
 let seconds = 0;
@@ -32,28 +32,19 @@ let gumStream;
 let btn_status = 'inactive';
 let audio = new Audio();
 let lastCount;
+let loading = false;
 // let authLinks = document.getElementById('auth-links-region');
 
 if (navigator.mediaDevices.getUserMedia) {
 
     if (window.webkitAudioContext) {
         $('#msg_box').text(messages.not_supported_in_safari_or_edge);
-        $('.auth-links-region').css('display', 'none'); 
-        $('.record_btn').css('display', 'none');
-        $('.usage-details').css('display', 'none');
+        $('.auth-links-region, .record_btn, .usage-details').css('display', 'none'); 
     }
 
     function beginRecording() {
-        $('.past-search-region').prop('hidden', true);
-        $('.api-results').prop('hidden', true);
-        $('.authentication-region').prop('hidden', true);
-        $('.auth-links-region').prop('hidden', true);
-        $('.usage-details').prop('hidden', true);
-        $('.instructions').prop('hidden', true);
-        $('.audD-result-title').prop('hidden', true);
-        $('.audD-error-message').prop('hidden', true);
-        $('.sheet-music-message').prop('hidden', true);
-        $('.save-button').prop('hidden', true);
+        $(`.past-search-region, .api-results, .authentication-region, .auth-links-region, .usage-details, .instructions, 
+           .audD-result-title, .audD-error-message, .sheet-music-message, .save-button`).prop('hidden', true);
         $('.sheet-music-message').remove();
 
         let AudioContext = window.AudioContext || window.webkitAudioContext || false; 
@@ -66,18 +57,21 @@ if (navigator.mediaDevices.getUserMedia) {
 
             $('#msg_box').text(messages.recording);
 
-            if (seconds > 0) {
-                lastCount = seconds;
-                $('#seconds-counter').css('display', 'block');
-                let cancle = setInterval(incrementSeconds, 1000);
-                clearInterval(cancle);   
-            }
-            else {
-                $('#seconds-counter').css('display', 'block');
-                incrementSeconds();
-                let cancle = setInterval(incrementSeconds, 1000);
-            }
 
+            if (loading === false) {
+                if (seconds > 0) {
+                    lastCount = seconds;
+                    $('#seconds-counter').css('display', 'block');
+                    let cancle = setInterval(incrementSeconds, 1000);
+                    clearInterval(cancle);   
+                }
+                else {
+                    $('#seconds-counter').css('display', 'block');
+                    incrementSeconds();
+                    setInterval(incrementSeconds, 1000);
+                }
+            }
+            
             time = Math.ceil( new Date().getTime() / 1000 );
         
             if (AudioContext) {
@@ -128,18 +122,20 @@ if (navigator.mediaDevices.getUserMedia) {
     }
 
     button.onclick = function () {
-        if (btn_status === 'inactive') {
-            beginRecording();
-        } else if (btn_status === 'recording') {
-            stopRecording();
+        if (loading === false) {
+            if (btn_status === 'inactive') {
+                beginRecording();
+            } else if (btn_status === 'recording') {
+                stopRecording();
+            }
         }
     }
 
     function parseTime(sec) {
-        var h = parseInt( sec / 3600 );
-        var m = parseInt( sec / 60 );
+        let h = parseInt( sec / 3600 );
+        let m = parseInt( sec / 60 );
 
-        var sec = sec - ( h * 3600 + m * 60 );
+        sec = sec - ( h * 3600 + m * 60 );
 
         h = h == 0 ? '' : h + ':';
         sec = sec < 10 ? '0' + sec : sec;
@@ -164,7 +160,7 @@ function stopRecording() {
   
   let recordingTime = recorder.recordingTime();
 
-  $('#msg_box').css('display', 'none');
+  $('#msg_box, .record_btn').css('display', 'none');
   button.classList.remove('recording');
   btn_status = 'inactive';
 
@@ -189,8 +185,8 @@ function pause() {
 }
 
 function POSTreq (blobData) {
-  var xhr = new XMLHttpRequest();
-  var fd = new FormData();
+  let xhr = new XMLHttpRequest();
+  let fd = new FormData();
   fd.append('api_token', '3e4055eb4b85f55e5681bbbf894e25f4');
   fd.append('file', blobData);
   fd.append('method', 'recognize');
@@ -206,7 +202,10 @@ function POSTreq (blobData) {
   xhr.responseType = 'json';
   xhr.send(fd);
   $('body').css('overflow', 'hidden');
-  $('.recorder').append('<div class="loader">Loading...</div>');
+  if (loading === false) {
+    $('.recorder').append('<div class="loader">Loading...</div>');
+    loading = true;
+  }
 }
 
 function parseRetrievedData(parseData) {
@@ -216,6 +215,8 @@ function parseRetrievedData(parseData) {
     let loggedInText = 'You are logged in as monsieur demo';
 
     $('.loader').remove();
+    loading = false;
+    $('.record_btn').css('display', 'inline-block');
     $('body').css('overflow', 'visible');
     $('#msg_box').css('display', 'block');
 
@@ -231,27 +232,25 @@ function parseRetrievedData(parseData) {
 
       $('.usage-details').prop('hidden', false);
 
-      var now = Math.ceil( new Date().getTime() / 1000 );
-      var t = parseTime( now - time );
+      let now = Math.ceil( new Date().getTime() / 1000 );
+      let t = parseTime( now - time );
 
       $('#msg_box').html(`<a href="#" onclick="play(); return false;" class="ui-link txt_btn">${messages.play} (${t})</a><br>
                             <a href="#" onclick="save(); return false;" class="ui-link txt_btn">${messages.download}</a>`);
 
   if (parseData === null || parseData.result === null || parseData.result === undefined) {
-    $('.api-results').prop('hidden', false);
-    $('.audD-error-message').prop('hidden', false);
+    $('.api-results, .audD-error-message').prop('hidden', false);
     $('.audD-error-message').html('Unable to identify audio. Try recording for a longer period or at a higher volume. Also note that Score Search can only identify recordings found in the itunes store.');
     $('.imslp-search-results').html('');
     return; 
   }
-  $('.api-results').prop('hidden', false);
-  $('.audD-result-title').prop('hidden', false);
+  $('.api-results, .audD-result-title').prop('hidden', false);
   $('.audD-result-title').html(parseData.result.title);
   getGoogleAPIData(parseData);
 }
 
 function save() {
-    var a = document.createElement( 'a' );
+    let a = document.createElement( 'a' );
     a.download = 'record.ogg';
     a.href = audioSrc;
     document.body.appendChild( a );
@@ -576,11 +575,7 @@ $(function() {
     let modalPropHidden = $('#modal').prop('hidden');
     //adds html for signup in modal
     $('.signup').click(function() {
-        $('.record_btn').prop('hidden', true);
-        $('#msg_box').prop('hidden', true);
-        $('.api-results').prop('hidden', true);
-        $('.auth-links-region').prop('hidden', true);
-        $('.usage-details').prop('hidden', true);
+        $('.record_btn, #msg_box, .api-results, .auth-links-region, .usage-details').prop('hidden', true);
         $('#modal').html(`
             <div class="form-positioner">
                 <p class="signup-error-box"></p>
@@ -606,11 +601,7 @@ $(function() {
     });
     // adds login html in modal
     $('.login').click(function() {
-        $('.record_btn').prop('hidden', true);
-        $('#msg_box').prop('hidden', true);
-        $('.api-results').prop('hidden', true);
-        $('.auth-links-region').prop('hidden', true);
-        $('.usage-details').prop('hidden', true);
+        $('.record_btn, #msg_box, .api-results, .auth-links-region, .usage-details').prop('hidden', true);
         $('#modal').html(`
             <div class="form-positioner">
                 <p class="login-error-box"></p>
@@ -633,19 +624,15 @@ $(function() {
         }
     });
     $('.demo').click(function() {
-        $('.login').css('display', 'none');
-        $('.signup').css('display', 'none');
-        $('.demo').css('display', 'none');
-        $('.api-results').prop('hidden', true);
-        $('.auth-links-region').prop('hidden', true);
+        $('.login, .signup, .demo').css('display', 'none');
+        $('.api-results, .auth-links-region').prop('hidden', true);
         $('.authentication-region').prop('hidden', false);
         $('.authentication-text').text('You are logged in as monsieur demo');
     });
     // event listener to close out modal
     $(document).click(function(e) {
-        if(!$(e.target).is('#modal') && !$(e.target).is('input') && !$(e.target).is('.signup-form') 
-                                     && !$(e.target).is('.login-form') && !$(e.target).is('.form-positioner') 
-                                     && !$(e.target).is('.login-error-box') && !$(e.target).is('.signup-error-box')) {
+        // if the event target from the click is not one of these elements
+        if(!$(e.target).is('#modal, input, label, .signup-form, .login-form, .form-positioner, .login-error-box, .signup-error-box')) {
             setTimeout(function(){
                 modalPropHidden = false;
             }, 300);
@@ -661,8 +648,7 @@ $(function() {
                     $('.auth-links-region').prop('hidden', false);
                 }
                 $('#modal').prop('hidden', true);
-                $('.record_btn').prop('hidden', false);
-                $('#msg_box').prop('hidden', false);
+                $('.record_btn, #msg_box').prop('hidden', false);
             }      
         }  
     });
@@ -692,15 +678,10 @@ $(function() {
             success: function(res, status, xhr) {
                 let userID = res.id;
                 loginUser(username, password, userID);
-                $('#msg_box').prop('hidden', false);
-                $('.record_btn').prop('hidden', false);
+                $('#msg_box, .record_btn, .usage-details').prop('hidden', false);
                 $('body').css('background', '#DEDEDE');
-                $('#modal').prop('hidden', true);
-                $('.auth-links-region').prop('hidden', true);
-                $('.usage-details').prop('hidden', false);
-                $('#signup-email').val('');
-                $('#signup-password').val('');
-                $('#signup-username').val('');
+                $('#modal, .auth-links-region').prop('hidden', true);
+                $('#signup-email, #signup-password, #signup-username').val('');
             },
             error: function(err) {
               console.error('There was an Error in Creating the User: ', err);
@@ -743,12 +724,9 @@ $(function() {
                     contentType: 'application/json',
                     success: function(res, status, xhr) {
                         loginUser(username, password);
-                        $('#msg_box').prop('hidden', false);
-                        $('.record_btn').prop('hidden', false);
-                        $('.auth-links-region').prop('hidden', true);
-                        $('.usage-details').prop('hidden', false);
+                        $('#msg_box, .record_btn, .usage-details').prop('hidden', false);
+                        $('.auth-links-region, #modal').prop('hidden', true);
                         $('body').css('background', '#DEDEDE');
-                        $('#modal').prop('hidden', true);
                     },
                     error: function(err) {
                         console.error('There was a problem retrieving the user by username');
@@ -760,35 +738,30 @@ $(function() {
               $('.login-error-box').text(err.responseJSON.message);
             }
       })
-        $('#login-username').val('');
-        $('#login-password').val('');
+        $('#login-username, #login-password').val('');
     });
     // event listener link to save a search result 
     $('.save-button').click(function() {
+        // if the user is logged in
         if (localStorage.getItem('authToken')) {
             savePastSearchToDB(STATE.googleData, STATE.musicTitle);
-            $('.past-search-region').prop('hidden', true);
-            $('.save-button').prop('hidden', true);
         }
+        // if the user is using the demo
         else {
             savePastDemoSearch(STATE.googleData, STATE.musicTitle);
-            $('.past-search-region').prop('hidden', true);
-            $('.save-button').prop('hidden', true);
         }
+        $('.past-search-region, .save-button').prop('hidden', true);
     });
     // event listener to access past searches
     $('.mysearches-link').click(function() {
         if (localStorage.getItem('authToken')) {
             accessSearches();
-            $('.api-results').prop('hidden', true);
-            $('.past-search-region').prop('hidden', false);
         }
         else {
             showDemoSearches();
-            $('.api-results').prop('hidden', true);
-            $('.past-search-region').prop('hidden', false);
         }
-        
+        $('.api-results').prop('hidden', true);
+        $('.past-search-region').prop('hidden', false);
     });
     // event listener to delete a past search 
     $('body').on('click', '.delete-button', function() {
@@ -811,30 +784,22 @@ $(function() {
         $('.api-results').prop('hidden', true);
         if (localStorage.getItem('authToken')) {
             localStorage.removeItem('authToken');
-            $('.past-search-region').prop('hidden', true);
-            $('.auth-links-region').prop('hidden', false);
-            $('.authentication-region').prop('hidden', true);
+            $('.past-search-region, .authentication-region').prop('hidden', true);
             $('.demo').css('display', 'inline-block');
-            $('.past-searches').empty();
         }
         // for exiting the demo account
         else {
-            $('.login').css('display', 'inline-block');
-            $('.signup').css('display', 'inline-block');
-            $('.demo').css('display', 'inline-block');
-            $('.auth-links-region').prop('hidden', false);
+            $('.login, .signup, .demo').css('display', 'inline-block');
             $('.authentication-region').prop('hidden', true);
-            $('.past-searches').empty();
         }
+        $('.auth-links-region').prop('hidden', false);
+        $('.past-searches').empty();
     });
     $(document).keydown(function(e) { 
-    if (e.keyCode == 27) { 
-        $('#modal').prop('hidden', true);
-        $('.auth-links-region').prop('hidden', false);
-        $('#msg_box').prop('hidden', false);
-        $('.record_btn').prop('hidden', false);
-        $('.usage-details').prop('hidden', false);
-        $('body').css('background', '#DEDEDE');
-    } 
-});
+        if (e.keyCode == 27) { 
+            $('#modal').prop('hidden', true);
+            $('.auth-links-region, #msg_box, .record_btn, .usage-details').prop('hidden', false);
+            $('body').css('background', '#DEDEDE');
+        } 
+    });
 });

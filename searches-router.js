@@ -4,13 +4,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const router = express.Router();
-const { localStrategy, jwtStrategy } = require('./auth/strategies')
+const { jwtStrategy } = require('./auth/strategies')
 router.use(express.json());
 router.use(express.static('public/searches'));
 
 mongoose.Promise = global.Promise;
 
-const { PORT } = require('./config');
 const { Users, PastSearches } = require('./model');
 
 passport.use(jwtStrategy);
@@ -18,7 +17,6 @@ const jwtAuth = passport.authenticate('jwt', { session: false });
 
 router.get('/', (req, res) => {
 	console.log('Retrieving Searches');
-	//res.sendFile(__dirname + '/public/searches/dummysearches.html');
 	PastSearches.find()
 	.then(searches => {
 		res.json({
