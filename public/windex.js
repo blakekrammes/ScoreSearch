@@ -38,7 +38,7 @@ let AudioContext;
 
 if (navigator.mediaDevices.getUserMedia) {
 
-    if (window.webkitAudioContext) {
+    if (window.webkitAudioContext && typeof window.orientation === 'undefined') {
         alert(messages.not_supported_in_safari_or_edge);
     }
 
