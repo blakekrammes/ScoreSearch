@@ -33,13 +33,17 @@ let btn_status = 'inactive';
 let audio = new Audio();
 let lastCount;
 let loading = false;
+let AudioContext;
 // let authLinks = document.getElementById('auth-links-region');
 
 if (navigator.mediaDevices.getUserMedia) {
 
     if (window.webkitAudioContext) {
-        $('#msg_box').text(messages.not_supported_in_safari_or_edge);
-        $('.auth-links-region, .record_btn, .usage-details').css('display', 'none'); 
+        alert(messages.not_supported_in_safari_or_edge);
+    }
+
+    if (typeof window.orientation !== 'undefined') { 
+        alert('Score Search is not yet supported for mobile devices or tablets. Please use a desktop with Chrome or Firefox.')
     }
 
     function beginRecording() {
@@ -168,6 +172,8 @@ function stopRecording() {
 
   audioTrack.stop();
 
+
+
   recorder.finishRecording();
 }
 
@@ -195,6 +201,7 @@ function POSTreq (blobData) {
 
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4) {
+        console.log(xhr.response)
       parseRetrievedData(xhr.response);
     }
   }
