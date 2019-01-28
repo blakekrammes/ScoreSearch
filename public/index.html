@@ -15,31 +15,39 @@
   <body>
     <section class="row" role="region">
       <header role="banner" class="col-xs-12">
-        <h1 class="page-title">Score Search</h1>
-        <h3 class="site-description">Identify Classical Music by Recording and Find the Sheet Music</h3>
+        <div id="header-flex-container">
+          <h1 id="page-title">Score Search</h1>
+          <section id="auth-links-region" class="auth-links-region" role="region" aria-live="assertive">
+            <a href="#" class="ui-link signup">Signup</a>
+            <a href="#" class="ui-link login">Login</a>
+            <a href="#" class="ui-link demo">Demo</a>
+            <div id="tooltip-container" class="instructions" aria-live="polite">
+              <a href="#" id="question-mark" aria-label="instructions" class="ui-link">?</a>
+              <p id="tooltip-text" class="instruction-paragraph">
+                <span id="site-description">Identify Classical Music by Recording and Find the Sheet Music</span> <br> <br>
+                Record between 5 and 25 seconds. <br> <br>
+                The recorded audio must be in the itunes store for recognition and
+                the piece must be in the public domain to retrieve sheet music. <br> <br>
+                <a id="tooltip-link" href="https://www.youtube.com/watch?v=oS_XjkILFMY" target="_blank">
+                  Here
+                </a> is a recording that Score Search identifies successfully.
+              </p>
+            </div>
+          </section>
+          <section class="authentication-region" role="region" aria-live="polite" hidden>
+            <p id="authentication-text"></p>
+            <a href="#" class="ui-link pastsearches-link">Past Searches</a>
+            <a href="#" class="ui-link logout-link">Logout</a>
+          </section>
+          
+              
+            </div>
+        </div>
       </header>
       <section class="recorder col-xs-12" role="region">
           <button class="record_btn" id="button" aria-label="record button"></button>
           <div id="msg_box" aria-live="assertive"></div>
           <div id="seconds-counter"></div>
-          <a href="#" aria-label="instructions" class="usage-details">?</a>
-          <div class="instructions" aria-live="polite" hidden>
-            <p class="instruction-paragraph">For best results, record between 5 and 25 seconds.</p>
-            <p class="instruction-paragraph">For quiet pieces, you may need to record longer.</p>
-            <p class="instruction-paragraph">The recorded audio must be in the itunes store.</p>
-            <p class="instruction-paragraph">The piece must be in the public domain to retrieve sheet music.</p> 
-            <p class="instruction-paragraph"><a href="https://www.youtube.com/watch?v=oS_XjkILFMY" target="_blank">Here</a> is a link to a recording that Score Search identifies successfully.</p>
-          </div>
-          <section id="auth-links-region" class="auth-links-region" role="region" aria-live="assertive">
-            <a href="#" class="ui-link signup">Signup</a>
-            <a href="#" class="ui-link login">Login</a>
-            <a href="#" class="ui-link demo">Demo</a>
-          </section>
-            <section class="authentication-region" role="region" aria-live="polite" hidden>
-              <p class="authentication-text" ></p>
-              <a href="#" class="ui-link mysearches-link">My Searches</a>
-              <a href="#" class="ui-link logout-link">Logout</a>
-            </section>
       </section>
       <section class="past-search-region col-xs-12" role="region" aria-live="assertive" hidden>
         <section class="past-searches row" role="region">

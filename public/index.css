@@ -3,14 +3,13 @@
 @import 'https://fonts.googleapis.com/icon?family=Material+Icons|Roboto';
 
 .record_btn {
-    /*border-color: rgba(255,255,255,.17);*/
     margin: 1rem;
     width: 50vw;
     height: 50vw;
     font-family: 'Material Icons';
     font-size: 25vw;
     color: rgba(0, 0, 0);
-    background: none;
+    background: whitesmoke;
     border: 2px solid rgba(255,255,255,.4);
     border-radius: 50%;
     cursor: pointer;
@@ -159,8 +158,8 @@ html {
 header {
     color: #DEDEDE;
     background: rgb(0, 0, 0);
-    /*padding: .3rem 1rem;*/
-    padding: 3.5vw;
+    height: 100px;
+    padding: 11.5px;
 }
 
 .recorder {
@@ -178,11 +177,11 @@ h1, h2, h3 {
 }
 
 a {
-    color: #2C4C29;
     text-decoration: none;
     word-wrap: break-word;
     font-size: 1.1rem;
     transition: .3s;
+    color: #75AF6E;
 }
 
 a:hover {
@@ -238,12 +237,9 @@ input[type=submit]:hover {
     transition: .2s;
 }
 
-.page-title {
+#page-title {
     font-size: 2rem;
-}
-
-.site-description {
-    padding-bottom: 1.5vw;
+    /* margin-bottom: 5px;  */
 }
 
 .music-title, .creation-time {
@@ -257,6 +253,44 @@ input[type=submit]:hover {
 
 .ui-link {
     margin-bottom: 1rem;
+    padding-right: 6px;
+}
+
+#tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+#tooltip-text {
+    width: 230px;
+    background-color: rgba(0,0,0,1);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    position: absolute;
+    right: 40%;
+    z-index: 1;
+    font-size: 12px;
+    line-height: 16px;
+    padding: 12px 11px;
+    opacity: 0;
+    visibility: hidden;
+    transition: .6s;
+}
+
+#site-description {
+    font-size: 16px;
+    line-height: 20px;
+}
+
+#tooltip-link {
+    font-size: 15px;
+    color: #75AF6E;
+}
+
+#tooltip-link:hover {
+    color: #3D693A;
+    transition: .3s;
 }
 
 .searches-username {
@@ -296,10 +330,6 @@ input[type=submit]:hover {
 .delete-button:hover {
     color: rgba(0, 0, 0, .7);
     transition: 0.3s;
-
-    .past-search-items {
-        background: blue;
-    }
 }
 
 #modal {
@@ -318,27 +348,6 @@ input[type=submit]:hover {
 #msg_box {
     margin-bottom: 5vw;
     line-height: 6.5vw;
-}
-
-.instructions {
-    /*line-height: 1.5rem;*/
-    border-top: 1px solid rgba(0, 0, 0, .5);
-    border-bottom: 1px solid rgba(0, 0, 0, .5);
-    width: 100vw;
-    margin: 0 auto; 
-    margin-top: 1vw;
-    margin-bottom: 1vw;
-    padding-bottom: 1.2vw;
-    padding-top: 1.2vw;
-
-}
-
-.instruction-paragraph {
-    font-size: 3.8vw;
-    line-height: 5.5vw;
-    padding-top: .3vw;
-    padding-right: 3vw;
-    padding-left: 3vw;
 }
 
 .form-positioner {
@@ -371,9 +380,7 @@ input[type=submit]:hover {
     text-align: left;
     font-weight: 500;
     border-bottom: .1rem solid rgba(0, 0, 0, .4);
-    /*padding-bottom: .5rem;*/
     font-size: 1.3rem;
-    /*line-height: 5.5vw;*/
     padding-top: .3vw;
     padding-bottom: .1rem;
 }
@@ -383,8 +390,6 @@ input[type=submit]:hover {
     margin-top: -1.5rem;
     text-align: center;
     font-weight: 400;
-    /*border-bottom: .1rem solid rgba(0, 0, 0, .1);*/
-    /*padding-bottom: .5rem;*/
     font-size: 3.8vw;
     line-height: 5.5vw;
     padding-top: .3rem;
@@ -405,7 +410,6 @@ input[type=submit]:hover {
 }
 
 .api-results {
-    /*margin-top: -2rem;*/
     width: 100vw;
     margin: 0 auto;
     padding: 0 1rem;
@@ -431,28 +435,15 @@ input[type=submit]:hover {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
 }
-.usage-details {
+#question-mark {
     line-height: 1rem;
-    font-size: 3rem;
+    font-size: 1.5rem;
 }
 
 @media only screen and (min-width: 500px) {
     #msg_box {
         margin-bottom: 2.5vw;
         line-height: 5vw;
-    }
-    .instructions {
-        width: 90vw;
-    }
-    .instruction-paragraph {
-        font-size: 3vw;
-        line-height: 4.5vw;
-        padding-top: .2vw;
-        padding-right: 2vw;
-        padding-left: 2vw;
-    }
-    .audD-result-title {
-        /*margin-bottom: -2rem;*/
     }
     .form-positioner, #modal {
         height: 30rem;
@@ -477,6 +468,9 @@ input[type=submit]:hover {
     a, input, label, h2, h3, p {
         font-size: 1.8rem;
     }
+    a {
+        color: #75AF6E;
+    }
     p {
         margin-top: .5rem;
     }
@@ -485,10 +479,24 @@ input[type=submit]:hover {
         font-size: 1.5rem;
     }
     header {
-        padding: 2.8vw;
+        height: 120px;
+        padding: 32px 30px;
     }
-    .page-title {
-        font-size: 3.5rem;
+    #header-flex-container {
+        display: flex;
+        justify-content: space-between
+    }
+    #auth-links-region {
+        padding-top: 17px;
+    }
+    #authentication-text {
+        font-size: 14px;
+    }
+    .ui-link {
+        font-size: 22px;
+    }
+    #page-title {
+        font-size: 2.5rem;
     }
     .recorder {
         font-size: 1.5rem;
@@ -496,9 +504,6 @@ input[type=submit]:hover {
     #msg_box {
         font-size: 1.8rem;
         margin-bottom: 1.6rem
-    }
-    .usage-details {
-        line-height: 2.5rem;
     }
     .form-positioner, #modal {
         height: 35rem;
@@ -511,10 +516,6 @@ input[type=submit]:hover {
         font-size: 1.5rem;
         padding: 0 1rem;
         padding-top: 3rem; 
-    }
-    .authentication-text {
-        font-size: 1.8rem;
-        padding: .5rem;
     }
     .music-title {
         padding-top: .3rem;
@@ -540,27 +541,6 @@ input[type=submit]:hover {
     .text_btn {
         line-height: 2rem;
     }
-    .ui-link {
-        padding: 0 .3rem;
-        font-size: 2rem;
-        line-height: 2.5rem;
-    }
-    .usage-details {
-        font-size: 5rem;
-    }
-    .instructions {
-        width: 100vw;
-    }
-    .instruction-paragraph {
-        font-size: 2.7vw;
-        line-height: 3.2vw;
-        padding-top: 0vw;
-        padding-bottom: 0vw;
-        padding-right: 3vw;
-        padding-left: 3vw;
-        /*padding-right: 3vw;*/
-        /*padding-left: 3vw;*/
-    }
     .api-results {
         width: 100vw;
     }
@@ -569,15 +549,11 @@ input[type=submit]:hover {
     }
     .audD-result-title {
         font-size: 1.9rem;
-        /*line-height: 5.2vw;*/
         padding-top: 2vw;
-        /*padding-bottom: 2vw;*/
     }
     .audD-error-message {
-        /*margin-top: 2.5rem;*/
         font-size: 2.7vw;
         line-height: 3.2vw;
-        /*padding-top: 0vw;*/
         padding-bottom: 0vw;
         padding-right: 3vw;
         padding-left: 3vw;
@@ -592,31 +568,10 @@ input[type=submit]:hover {
     }
 }
 
-/*@media only screen and (min-width: 750px) {
-    .instructions {
-        width: 90vw;
-    }
-    .instruction-paragraph {
-        font-size: 2.5vw;
-        line-height: 2.5vw;
-    }
-}*/
-
 @media only screen and (min-width: 750px) {
-    .instructions {
-        width: 95vw;
-    }
-    .instruction-paragraph {
-        font-size: 2.5vw;
-        line-height: 3vw;
-    }
     .api-results {
         width: 95vw;
-    }
-    .audD-result-title {
-        /*font-size: 2.5vw;*/
-        /*line-height: 3vw;*/
-    }
+    } 
     .audD-error-message {
         font-size: 2.5vw;
         line-height: 3vw;
@@ -628,26 +583,13 @@ input[type=submit]:hover {
 }
 
 @media only screen and (min-width: 800px) {
-    .instructions {
-        padding-top: 1.2vw;
-        padding-bottom: 1.2vw;
-        width: 90vw;
-    }
-    .instruction-paragraph {
-        font-size: 2.2vw;
-        /*line-height: 2.7vw;*/
-    }
     .api-results {
         width: 90vw;
     }
     .audD-result-title {
         font-size: 1.8rem;
-        /*margin-bottom: -1rem;*/
-        /*line-height: 2.7vw;*/
-        /*padding-bottom: 1.2vw;*/
     }
     .audD-error-message {
-        /*margin-top: 1.4rem;*/
         font-size: 2.2vw;
         line-height: 2.7vw;
         padding-bottom: 1.2vw;
@@ -664,11 +606,12 @@ input[type=submit]:hover {
 
 /*larger tablets/tablets in landscape/small laptops and desktop computers*/
 @media only screen and (min-width: 992px) {
-    label, .authentication-text, #msg_box, h3, h2, p  {
+    label, #msg_box, h3, h2, p  {
         font-size: 2rem;
     }
     a {
         font-size: 1.8rem;
+        color: #75AF6E;
     }
     .record_btn {
         width: 30vw;
@@ -685,9 +628,6 @@ input[type=submit]:hover {
         margin-bottom: 1rem;
         line-height: 4vw;  
     } 
-    .instructions {
-        width: 80vw;
-    }
     .appender {
         font-size: 1.4rem;
     }
@@ -701,12 +641,6 @@ input[type=submit]:hover {
 
 /*any larger devices*/
 @media only screen and (min-width: 1200px) {
-    header {
-        padding: 2vw;
-    }
-    .site-description {
-        padding-bottom.5vw;
-    }
     .record_btn {
         width: 20vw;
         height: 20vw;
@@ -727,18 +661,10 @@ input[type=submit]:hover {
         height: 30rem;
         margin: -15rem 0 0 -35vw;
     }
-    .usage-details {
+    #question-mark {
         line-height: 2rem;
     }
-    .instructions {
-        width: 75vw;
-    }
-    .instruction-paragraph {
-        font-size: 1.8vw;
-        line-height: 2.4vw;
-    }
     .api-results {
-        /*margin-top: -2rem;*/
         width: 75vw;
     }
     .appender {
@@ -747,12 +673,10 @@ input[type=submit]:hover {
     .audD-result-title {
         padding-top: 0vw;
         font-size: 2rem;
-        /*line-height: 2.4vw;*/
     }
     .audD-error-message {
         font-size: 1.8vw;
         line-height: 2.4vw;
-        /*margin-top: 1.5rem;*/
     }
     .sheet-music-message {
         font-size: 1.8vw;
@@ -761,13 +685,4 @@ input[type=submit]:hover {
     .signup-error-box, .login-error-box {
         padding-top: 2rem;
     }
-    /*.auth-links-region {
-        border-radius: 4px;
-        border: 2.5px solid #2C4C29;
-        padding: 1rem 0;
-        width: 30vw;
-        background: whitesmoke;
-        margin: 0 auto;
-        margin-top: .5rem;
-    }*/
 }

@@ -42,12 +42,12 @@ if (navigator.mediaDevices.getUserMedia) {
         alert(messages.not_supported_in_safari_or_edge);
     }
 
-    if (typeof window.orientation !== 'undefined') { 
-        alert('Score Search is not yet supported for mobile devices or tablets. Please use a desktop with Chrome or Firefox.')
-    }
+    // if (typeof window.orientation !== 'undefined') { 
+    //     alert('Score Search is not yet supported for mobile devices or tablets. Please use a desktop with Chrome or Firefox.')
+    // }
 
     function beginRecording() {
-        $(`.past-search-region, .api-results, .authentication-region, .auth-links-region, .usage-details, .instructions, 
+        $(`.past-search-region, .api-results, .authentication-region, .auth-links-region, #question-mark, .instructions, 
            .audD-result-title, .audD-error-message, .sheet-music-message, .save-button`).prop('hidden', true);
         $('.sheet-music-message').remove();
 
@@ -217,9 +217,9 @@ function POSTreq (blobData) {
 
 function parseRetrievedData(parseData) {
 
-    let authText = $('.authentication-text').text();
+    let authText = $('#authentication-text').text();
 
-    let loggedInText = 'You are logged in as monsieur demo';
+    let loggedInText = 'You are logged in as monsieur démo';
 
     $('.loader').remove();
     loading = false;
@@ -237,7 +237,7 @@ function parseRetrievedData(parseData) {
         $('.auth-links-region').prop('hidden', true);
       }
 
-      $('.usage-details').prop('hidden', false);
+      $('#question-mark').prop('hidden', false);
 
       let now = Math.ceil( new Date().getTime() / 1000 );
       let t = parseTime( now - time );
@@ -305,8 +305,8 @@ function getGoogleAPIData(audDData) {
 }
 
 function renderGoogleAPIData(googleData, music_title) {
-    let authText = $('.authentication-text').text();
-    let loggedInText = 'You are logged in as monsieur demo';
+    let authText = $('#authentication-text').text();
+    let loggedInText = 'You are logged in as monsieur démo';
 
     if (googleData.items === undefined || googleData.items === null) {
         $('<p class="sheet-music-message">Unable to retrieve sheet music. Note that Score Search can only return sheet music that is in the public domain.</p>').insertAfter('.audD-result-title');
@@ -455,12 +455,12 @@ function loginUser(usernm, pass) {
              // set the auth token to a variable to retrieve it
              let authToken = localStorage.getItem('authToken');
              $('.authentication-region').prop('hidden', false);
-             $('.authentication-text').text(`You are logged in as ${usernm}`);
+             $('#authentication-text').text(`You are logged in as ${usernm}`);
         },
         error: function(err) {
           console.error('There was an Error in logging in the User:', err);
           $('.authentication-region').prop('hidden', false);
-          $('.authentication-text').text(`Incorrect username or password`);
+          $('#authentication-text').text(`Incorrect username or password`);
         }
     })
 }
@@ -562,27 +562,29 @@ $(function() {
         let username = parseJwt(authenticationToken).user.username;
         $('.auth-links-region').prop('hidden', true);
         $('.authentication-region').prop('hidden', false);
-        $('.authentication-text').text(`You are logged in as ${username}`);
-        $('.mysearches-link').click(function() {
+        $('#authentication-text').text(`You are logged in as ${username}`);
+        $('.pastsearches-link').click(function() {
             accessSearches();
             $('.past-search-region').prop('hidden', false);
         });
     }
     let display = false;
-    $('.usage-details').click(function(e) {
+    $('#question-mark').click(function(e) {
         if (display === false) {
-            $('.instructions').prop('hidden', false);
+            $('#tooltip-text').css('opacity', '1');
+            $('#tooltip-text').css('visibility', 'visible');
             display = true;
         }
         else if (display === true) {
-            $('.instructions').prop('hidden', true);
+            $('#tooltip-text').css('opacity', '0');
+            $('#tooltip-text').css('visibility', 'hidden');
             display = false;
         }
     });
     let modalPropHidden = $('#modal').prop('hidden');
     //adds html for signup in modal
     $('.signup').click(function() {
-        $('.record_btn, #msg_box, .api-results, .auth-links-region, .usage-details').prop('hidden', true);
+        $('.record_btn, #msg_box, .api-results, .auth-links-region, #question-mark').prop('hidden', true);
         $('#modal').html(`
             <div class="form-positioner">
                 <p class="signup-error-box"></p>
@@ -608,7 +610,7 @@ $(function() {
     });
     // adds login html in modal
     $('.login').click(function() {
-        $('.record_btn, #msg_box, .api-results, .auth-links-region, .usage-details').prop('hidden', true);
+        $('.record_btn, #msg_box, .api-results, .auth-links-region, #question-mark').prop('hidden', true);
         $('#modal').html(`
             <div class="form-positioner">
                 <p class="login-error-box"></p>
@@ -634,10 +636,15 @@ $(function() {
         $('.login, .signup, .demo').css('display', 'none');
         $('.api-results, .auth-links-region').prop('hidden', true);
         $('.authentication-region').prop('hidden', false);
-        $('.authentication-text').text('You are logged in as monsieur demo');
+        $('#authentication-text').text('You are logged in as monsieur démo');
     });
     // event listener to close out modal
     $(document).click(function(e) {
+        if (!$(e.target).is('#tooltip-text, #site-description, #tooltip-link') && $('#tooltip-text').css('opacity') === '1') {
+            $('#tooltip-text').css('opacity', '0');
+            $('#tooltip-text').css('visibility', 'hidden');
+            display = false
+        }
         // if the event target from the click is not one of these elements
         if(!$(e.target).is('#modal, input, label, .signup-form, .login-form, .form-positioner, .login-error-box, .signup-error-box')) {
             setTimeout(function(){
@@ -649,7 +656,7 @@ $(function() {
                     $('.auth-links-region').prop('hidden', true);
                 }
                 if ($('#modal').prop('hidden') === false && btn_status === 'inactive') {
-                    $('.usage-details').prop('hidden', false);
+                    $('#question-mark').prop('hidden', false);
                 }
                 if ($('.authentication-region').prop('hidden') === true && $('#modal').prop('hidden') === false)  {
                     $('.auth-links-region').prop('hidden', false);
@@ -685,7 +692,7 @@ $(function() {
             success: function(res, status, xhr) {
                 let userID = res.id;
                 loginUser(username, password, userID);
-                $('#msg_box, .record_btn, .usage-details').prop('hidden', false);
+                $('#msg_box, .record_btn, #question-mark').prop('hidden', false);
                 $('body').css('background', '#DEDEDE');
                 $('#modal, .auth-links-region').prop('hidden', true);
                 $('#signup-email, #signup-password, #signup-username').val('');
@@ -731,7 +738,7 @@ $(function() {
                     contentType: 'application/json',
                     success: function(res, status, xhr) {
                         loginUser(username, password);
-                        $('#msg_box, .record_btn, .usage-details').prop('hidden', false);
+                        $('#msg_box, .record_btn, #question-mark').prop('hidden', false);
                         $('.auth-links-region, #modal').prop('hidden', true);
                         $('body').css('background', '#DEDEDE');
                     },
@@ -760,7 +767,7 @@ $(function() {
         $('.past-search-region, .save-button').prop('hidden', true);
     });
     // event listener to access past searches
-    $('.mysearches-link').click(function() {
+    $('.pastsearches-link').click(function() {
         if (localStorage.getItem('authToken')) {
             accessSearches();
         }
@@ -805,7 +812,7 @@ $(function() {
     $(document).keydown(function(e) { 
         if (e.keyCode == 27) { 
             $('#modal').prop('hidden', true);
-            $('.auth-links-region, #msg_box, .record_btn, .usage-details').prop('hidden', false);
+            $('.auth-links-region, #msg_box, .record_btn, #question-mark').prop('hidden', false);
             $('body').css('background', '#DEDEDE');
         } 
     });
