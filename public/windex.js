@@ -42,9 +42,9 @@ if (navigator.mediaDevices.getUserMedia) {
         alert(messages.not_supported_in_safari_or_edge);
     }
 
-    // if (typeof window.orientation !== 'undefined') { 
-    //     alert('Score Search is not yet supported for mobile devices or tablets. Please use a desktop with Chrome or Firefox.')
-    // }
+    if (typeof window.orientation !== 'undefined') { 
+        alert('Score Search is not yet supported for mobile devices or tablets. Please use a desktop with Chrome or Firefox.')
+    }
 
     function beginRecording() {
         $(`.past-search-region, .api-results, .authentication-region, .auth-links-region, #question-mark, .instructions, 
@@ -571,6 +571,7 @@ $(function() {
     let display = false;
     $('#question-mark').click(function(e) {
         if (display === false) {
+            console.log('hi')
             $('#tooltip-text').css('opacity', '1');
             $('#tooltip-text').css('visibility', 'visible');
             display = true;
