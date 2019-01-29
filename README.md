@@ -12,7 +12,7 @@
 
 ### Signup: 
 
-![Signup](https://github.com/Blakesters/ScoreSearch/blob/master/screenshots/scoressearch_signup.png)
+![Signup](https://github.com/Blakesters/ScoreSearch/blob/master/screenshots/scoresearch_signup.png)
 
 ### Recording Audio:
 
