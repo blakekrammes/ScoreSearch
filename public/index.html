@@ -39,30 +39,27 @@
             <a href="#" class="ui-link pastsearches-link">Past Searches</a>
             <a href="#" class="ui-link logout-link">Logout</a>
           </section>
-          
-              
-            </div>
         </div>
       </header>
-      <section class="recorder col-xs-12" role="region">
-          <button class="record_btn" id="button" aria-label="record button"></button>
-          <div id="msg_box" aria-live="assertive"></div>
-          <div id="seconds-counter"></div>
+    </section>  
+    <section class="recorder col-xs-12" role="region">
+        <button class="record_btn" id="button" aria-label="record button"></button>
+        <div id="msg_box" aria-live="assertive"></div>
+        <div id="seconds-counter"></div>
+    </section>
+    <section class="past-search-region col-xs-12" role="region" aria-live="assertive" hidden>
+      <section class="past-searches row" role="region">
       </section>
-      <section class="past-search-region col-xs-12" role="region" aria-live="assertive" hidden>
-        <section class="past-searches row" role="region">
-        </section>
-        <section class="demo-past-searches row" role="region">
-        </section>
+      <section class="demo-past-searches row" role="region">
       </section>
-      <section class="api-results" role="region" aria-live="assertive" hidden>
-        <h2 class="audD-result-title" hidden></h2>
-        <h2 class="audD-error-message" hidden></h2>
-        <section class="imslp-results" role="region">
-          <ul class="imslp-search-results">
-          </ul>
-          <button href="#" class="save-button" role="button" hidden>Save</button>
-        </section>
+    </section>
+    <section class="api-results" role="region" aria-live="assertive" hidden>
+      <h2 class="audD-result-title" hidden></h2>
+      <h2 class="audD-error-message" hidden></h2>
+      <section class="imslp-results" role="region">
+        <ul class="imslp-search-results">
+        </ul>
+        <button href="#" class="save-button" role="button" hidden>Save</button>
       </section>
     </section>
     <section id="modal" class="col-xs-12" role="region" aria-live="assertive" hidden></section>
